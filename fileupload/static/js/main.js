@@ -20,23 +20,58 @@ let dominator = {
     this.files = new Map();
   },
 
-  add: function(e, data) {
+  setType: (file_id) => {
+    console.log(file_id);
+    console.log(dominator.files.has(file_id));
+  },
+
+  add: (e, data) => {
     console.log(e);
     console.log(data);
-    if(!dominator.files.has(data.files[0].name)) {
+    console.log($('select#'+data.files[0].name.split('.')[0]));
+    if(!dominator.files.has(data.files[0].name.split('.')[0])) {
       console.log('inexistente');
-      dominator.files.set(data.files[0].name,
+      dominator.files.set(data.files[0].name.split('.')[0],
         {
           type: 'pat'
         }
       );
+      $('select#' + data.files[0].name.split('.')[0]).on('change', e => {
+        dominator.setType(e.currentTarget.value);
+      });
     } else {
       console.log('existe');
       data.abort();
     }
   },
 
-
+  uploadTemplate: function(o) {
+    let rows = $();
+    $.each(o.files, function(index, file) {
+      let row = $('<tr class="template-upload fade">' +
+        '<td><span class="preview"></span></td>' +
+        '<td><p class="name"></p>' +
+        '<div class="error"></div>' +
+        '</td>' +
+        '<td><p class="size"></p>' +
+        '<div class="progress"></div>' +
+        '</td>' +
+        '<td>' +
+        (!index && !o.options.autoUpload ?
+          '<button class="start" disabled>Start</button>' : '') +
+        (!index ? '<button class="cancel">Cancel</button>' : '') +
+        '</td>' +
+        '</tr>'
+      );
+      row.find('.name').text(file.name);
+      row.find('.size').text(o.formatFileSize(file.size));
+      if(file.error) {
+        row.find('.error').text(file.error);
+      }
+      rows.add(row);
+    });
+    return rows;
+  }
 }
 
 $(function () {
@@ -49,7 +84,8 @@ $(function () {
         // Uncomment the following to send cross-domain cookies:
         //xhrFields: {withCredentials: true},
         //url: 'server/php/'
-    }).bind('fileuploadadd', dominator.add);
+      uploadTemplate: dominator.uploadTemplate
+    }).bind('fileuploadadded', dominator.add);
 
     // Enable iframe cross-domain access via redirect option:
     $('#fileupload').fileupload(
