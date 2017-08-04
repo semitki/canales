@@ -27,7 +27,7 @@ def upload_js():
         </td>
         <td>
             {% if (!o.files.error && !i && !o.options.autoUpload) { %}
-                <button class="btn btn-primary start">
+                <button class="btn btn-primary start" style="display: none;">
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>{%=locale.fileupload.start%}</span>
                 </button>
