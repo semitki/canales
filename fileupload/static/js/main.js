@@ -26,22 +26,19 @@ let dominator = {
   },
 
   add: (e, data) => {
-    console.log(e);
-    console.log(data);
-    console.log($('select#'+data.files[0].name.split('.')[0]));
     if(!dominator.files.has(data.files[0].name.split('.')[0])) {
-      console.log('inexistente');
+      let element = $('select#' + data.files[0].name.split('.')[0]);
+      console.log(element.id());
       dominator.files.set(data.files[0].name.split('.')[0],
         {
-          type: 'pat'
+          type: ''
         }
       );
-      $('select#' + data.files[0].name.split('.')[0]).on('change', e => {
+      element.on('change', (e) => {
         dominator.setType(e.currentTarget.value);
       });
     } else {
-      console.log('existe');
-      data.abort();
+      data.abort(); // TODO make it abort add
     }
   },
 
