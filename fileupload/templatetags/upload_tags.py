@@ -43,7 +43,7 @@ def upload_js():
             <div class="col-lg-1">
               <select class="form-control">
                 <option value="paciente">Paciente</option>
-                <option value="medico">Médico</option>
+                <option value="medico">Casos</option>
               </select>
             </div>
         </td>
