@@ -39,6 +39,14 @@ def upload_js():
                 </button>
             {% } %}
         </td>
+        <td>
+            <div class="col-lg-1">
+              <select class="form-control">
+                <option value="paciente">Paciente</option>
+                <option value="medico">Médico</option>
+              </select>
+            </div>
+        </td>
     </tr>
 {% } %}
 </script>
