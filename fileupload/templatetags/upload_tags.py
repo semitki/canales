@@ -39,6 +39,12 @@ def upload_js():
                 </button>
             {% } %}
         </td>
+        <td>
+            <select class="form-control">
+                <option value="{%=file.name%}">Paciente</option>
+                <option value="{%=file.name%}">Caso<option>
+            </select>
+        </td>
     </tr>
 {% } %}
 </script>
