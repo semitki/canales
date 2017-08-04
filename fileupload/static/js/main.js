@@ -11,9 +11,35 @@
 
 /*jslint nomen: true, regexp: true */
 /*global $, window, blueimp */
+'use strict';
+
+let dominator = {
+
+  init: function() {
+    this.fileNumber = 0;
+  },
+
+  getCount: function() {
+    return this.fileNumber;
+  },
+
+  increment: function() {
+    if(this.fileNumber < 2) {
+      this.fileNumber++;
+    }
+  },
+
+  decrement: function() {
+    if(this.fileNumber > 0) {
+      this.fileNumber--;
+    }
+  }
+};
 
 $(function () {
     'use strict';
+
+    dominator.init();
 
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
