@@ -14,7 +14,7 @@
         <!--<noscript><input type="hidden" name="redirect" value="http://blueimp.github.io/jQuery-File-Upload/"></noscript>-->
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="row fileupload-buttonbar">
-            <div class="col-lg-7">
+            <div class="col-lg-6">
                 <!-- The fileinput-button span is used to style the file input field as button -->
                 <span class="btn btn-success fileinput-button">
                     <i class="glyphicon glyphicon-plus"></i>
@@ -32,10 +32,12 @@
                 <input type="checkbox" class="toggle">
                 <!-- The loading indicator is shown during file processing -->
                 <span class="fileupload-loading"></span>
-                <select class="form-control">
-                  <option value="paciente">Paciente</option>
-                  <option value="medico">Médico</option>
-                </select>
+            </div>
+            <div class="col-lg-1">
+              <select class="form-control">
+                <option value="paciente">Paciente</option>
+                <option value="medico">Médico</option>
+              </select>
             </div>
             <!-- The global progress information -->
             <div class="col-lg-5 fileupload-progress fade">
