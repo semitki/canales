@@ -20,22 +20,23 @@ let dominator = {
     this.files = new Map();
   },
 
-  setType: (file_id) => {
-    console.log(file_id);
-    console.log(dominator.files.has(file_id));
+  setType: (file_id, type) => {
+    if(dominator.files.has(file_id)) {
+      dominator.files.get(file_id).type = type;
+    }
+    console.log(dominator.files.get(file_id));
   },
 
   add: (e, data) => {
-    if(!dominator.files.has(data.files[0].name.split('.')[0])) {
-      let element = $('select#' + data.files[0].name.split('.')[0]);
-      console.log(element.id());
-      dominator.files.set(data.files[0].name.split('.')[0],
+    let element = $('select#' + data.files[0].name.split('.')[0]);
+    if(!dominator.files.has(element[0].id)) {
+      dominator.files.set(element[0].id,
         {
           type: ''
         }
       );
       element.on('change', (e) => {
-        dominator.setType(e.currentTarget.value);
+        dominator.setType(element[0].id, e.currentTarget.value);
       });
     } else {
       data.abort(); // TODO make it abort add
