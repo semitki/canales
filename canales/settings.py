@@ -76,9 +76,11 @@ WSGI_APPLICATION = 'canales.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
         'NAME': 'canalesdb',
-        'USER': 'canalesuser',
-        'PASSWORD': '123asdqwezxc',
+        'USER': 'root',
+        'PASSWORD': '123asdqwe',
     }
     #'default': {
     #    'ENGINE': 'django.db.backends.sqlite3',
