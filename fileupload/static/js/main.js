@@ -28,14 +28,8 @@ let dominator = {
   },
 
   add: (e, data) => {
-    console.log(data);
-    console.log(data.paramName);
-    data.file_type = 'xxx'; //e.currentTarget.value;
-    console.log(data.file_type);
-    dominator.setFormData(data);
     let element = $('select#' + data.files[0].name.split('.')[0]);
     if(!dominator.files.has(element[0].id)) {
-      data.file_type = e.currentTarget.value;
       dominator.files.set(element[0].id,
         {
           type: ''
@@ -43,47 +37,12 @@ let dominator = {
       );
       element.on('change', (e) => {
         dominator.setType(element[0].id, e.currentTarget.value);
-        dominator.setFormData(data);
       });
     } else {
       data.abort(); // TODO make it abort add
     }
   },
 
-  setFormData: function() {
-/*    this.el.fileupload('option',*/
-    //'formData', {
-      //file_type: 'ccc'
-    /*});*/
-  },
-
-  uploadTemplate: function(o) {
-    let rows = $();
-    $.each(o.files, function(index, file) {
-      let row = $('<tr class="template-upload fade">' +
-        '<td><span class="preview"></span></td>' +
-        '<td><p class="name"></p>' +
-        '<div class="error"></div>' +
-        '</td>' +
-        '<td><p class="size"></p>' +
-        '<div class="progress"></div>' +
-        '</td>' +
-        '<td>' +
-        (!index && !o.options.autoUpload ?
-          '<button class="start" disabled>Start</button>' : '') +
-        (!index ? '<button class="cancel">Cancel</button>' : '') +
-        '</td>' +
-        '</tr>'
-      );
-      row.find('.name').text(file.name);
-      row.find('.size').text(o.formatFileSize(file.size));
-      if(file.error) {
-        row.find('.error').text(file.error);
-      }
-      rows.add(row);
-    });
-    return rows;
-  }
 }
 
 $(function () {
@@ -97,7 +56,19 @@ $(function () {
         //xhrFields: {withCredentials: true},
         //url: 'server/php/'
       uploadTemplate: dominator.uploadTemplate
-    }).on('fileuploadadded', dominator.add);
+    }).on('fileuploadadded', dominator.add)
+    .on('fileuploadsend', function(e, data) {
+      for(let pair of data.data.entries()) {
+        console.log(pair[0] +' '+pair[1]);
+        if(pair[0] === 'file') {
+          console.log(data.data);
+          let name = data.data.get(pair[1].name.split('.')[0]);
+          console.log(name);
+          data.data.set('file_type', data.data.get(name));
+        }
+        console.log(data.data.get('file_type'));
+      }
+    });
 
     // Enable iframe cross-domain access via redirect option:
     $('#fileupload').fileupload(

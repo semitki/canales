@@ -16,8 +16,6 @@ class PictureCreateView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        logger.debug(self.object)
-        print(form)
         files = [serialize(self.object)]
         data = {'files': files}
         response = JSONResponse(data, mimetype=response_mimetype(self.request))
@@ -25,7 +23,6 @@ class PictureCreateView(CreateView):
         return response
 
     def form_invalid(self, form):
-        print(form)
         data = json.dumps(form.errors)
         return HttpResponse(content=data, status=400, content_type='application/json')
 

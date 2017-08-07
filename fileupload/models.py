@@ -10,7 +10,7 @@ class Picture(models.Model):
 
     """
     file = models.FileField(upload_to="pictures")
-    file_type = models.CharField(max_length=3)
+    file_type = models.CharField(max_length=3, blank=False)
     slug = models.SlugField(max_length=50, blank=True)
 
     def __str__(self):
