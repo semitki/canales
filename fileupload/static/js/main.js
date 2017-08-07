@@ -19,6 +19,9 @@ let dominator = {
   init: function(DOMelement) {
     this.el = DOMelement;
     this.files = new Map();
+    $('#fileupload_control .process').on('click', e => {
+      console.log(e);
+    });
   },
 
   setType: (file_id, type) => {
@@ -62,9 +65,7 @@ $(function () {
         dominator.files.get(data.data.get('file').name.split('.')[0]).type);
     })
     .on('fileuploadcompleted', function(e, data) {
-     $('#fileupload_controls .process').removeAttr('disabled');
-      console.log('subidos');
-      console.log(data);
+     $('#fileupload_control .process').removeAttr('disabled');
     });
 
     // Enable iframe cross-domain access via redirect option:
