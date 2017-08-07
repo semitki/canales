@@ -1,4 +1,5 @@
 # encoding: utf-8
+import logging
 import json
 
 from django.http import HttpResponse
@@ -7,6 +8,7 @@ from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
 
+logger = logging.getLogger(__name__)
 
 class PictureCreateView(CreateView):
     model = Picture
@@ -14,6 +16,8 @@ class PictureCreateView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        logger.debug(self.object)
+        print(form)
         files = [serialize(self.object)]
         data = {'files': files}
         response = JSONResponse(data, mimetype=response_mimetype(self.request))
@@ -21,23 +25,9 @@ class PictureCreateView(CreateView):
         return response
 
     def form_invalid(self, form):
+        print(form)
         data = json.dumps(form.errors)
         return HttpResponse(content=data, status=400, content_type='application/json')
-
-class BasicVersionCreateView(PictureCreateView):
-    template_name_suffix = '_basic_form'
-
-
-class BasicPlusVersionCreateView(PictureCreateView):
-    template_name_suffix = '_basicplus_form'
-
-
-class AngularVersionCreateView(PictureCreateView):
-    template_name_suffix = '_angular_form'
-
-
-class jQueryVersionCreateView(PictureCreateView):
-    template_name_suffix = '_jquery_form'
 
 
 class PictureDeleteView(DeleteView):
@@ -60,3 +50,21 @@ class PictureListView(ListView):
         response = JSONResponse(data, mimetype=response_mimetype(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
+
+
+class BasicVersionCreateView(PictureCreateView):
+    template_name_suffix = '_basic_form'
+
+
+class BasicPlusVersionCreateView(PictureCreateView):
+    template_name_suffix = '_basicplus_form'
+
+
+class AngularVersionCreateView(PictureCreateView):
+    template_name_suffix = '_angular_form'
+
+
+class jQueryVersionCreateView(PictureCreateView):
+    template_name_suffix = '_jquery_form'
+
+

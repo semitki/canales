@@ -134,3 +134,22 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'canales', 'media')
 
 EXPLORER_DEFAULT_ROWS=100
 EXPLORER_SCHEMA_INCLUDE_TABLE_PREFIXES='nw'
+
+LOGGING = {
+        'version': 1,
+        'diable_existeing_loggers': True,
+        'handlers': {
+            'file': {
+                'level': 'DEBUG',
+                'class': 'logging.FileHandler',
+                'filename': '/tmp/django.log',
+                },
+            },
+        'loggers': {
+            'django': {
+                'handlers': ['file'],
+                'level': 'DEBUG',
+                'propagate': True,
+                }
+            },
+        }

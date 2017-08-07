@@ -40,7 +40,8 @@ def upload_js():
             {% } %}
         </td>
         <td>
-            <select class="form-control" id="{%=file.name.split('.')[0]%}">
+            <select name="{%=file.name.split('.')[0]%}" class="form-control"
+            id="{%=file.name.split('.')[0]%}" class="file_type">
                 <option value="">Seleccione</option>
                 <option value="pat">Paciente</option>
                 <option value="cas">Caso<option>
@@ -82,9 +83,3 @@ def upload_js():
 {% } %}
 </script>
 """)
-
-
-
-
-
-

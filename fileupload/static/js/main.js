@@ -16,7 +16,8 @@
 
 let dominator = {
 
-  init: function() {
+  init: function(DOMelement) {
+    this.el = DOMelement;
     this.files = new Map();
   },
 
@@ -24,12 +25,17 @@ let dominator = {
     if(dominator.files.has(file_id)) {
       dominator.files.get(file_id).type = type;
     }
-    console.log(dominator.files.get(file_id));
   },
 
   add: (e, data) => {
+    console.log(data);
+    console.log(data.paramName);
+    data.file_type = 'xxx'; //e.currentTarget.value;
+    console.log(data.file_type);
+    dominator.setFormData(data);
     let element = $('select#' + data.files[0].name.split('.')[0]);
     if(!dominator.files.has(element[0].id)) {
+      data.file_type = e.currentTarget.value;
       dominator.files.set(element[0].id,
         {
           type: ''
@@ -37,10 +43,18 @@ let dominator = {
       );
       element.on('change', (e) => {
         dominator.setType(element[0].id, e.currentTarget.value);
+        dominator.setFormData(data);
       });
     } else {
       data.abort(); // TODO make it abort add
     }
+  },
+
+  setFormData: function() {
+/*    this.el.fileupload('option',*/
+    //'formData', {
+      //file_type: 'ccc'
+    /*});*/
   },
 
   uploadTemplate: function(o) {
@@ -75,7 +89,7 @@ let dominator = {
 $(function () {
     'use strict';
 
-  dominator.init(); // Initialize the dominator
+  dominator.init($('#fileupload')); // Initialize the dominator
 
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
@@ -83,7 +97,7 @@ $(function () {
         //xhrFields: {withCredentials: true},
         //url: 'server/php/'
       uploadTemplate: dominator.uploadTemplate
-    }).bind('fileuploadadded', dominator.add);
+    }).on('fileuploadadded', dominator.add);
 
     // Enable iframe cross-domain access via redirect option:
     $('#fileupload').fileupload(
