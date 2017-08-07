@@ -63,9 +63,21 @@ $(function () {
     })
     .on('fileuploadcompleted', function(e, data) {
       $('#fileupload_control .process').on('click', e => {
-        console.log(e);
-        console.log(data);
-        $.get('/process', {f1: '1', f2: '2'});
+        console.log(data.result);
+        let key = undefined;
+        let file = data.result.files[0];
+/*        if(file.name.split('_').length > 1) {*/
+          //key = file.name.split('_')[1].split('.')[0];
+        //} else if(file.name.split('_').length = 1) {
+          //key = file.name.split('_')[0].split('.')[0];
+        //}
+        //let o = dominator.files.forEach(function(f) {
+          //if(!f.hasOwnProperty('resource_id')
+          //&& (dominator.files.has(key))) {
+            //dominator.files.get(key).resource_id = .resource_id
+          //}
+        /*});*/
+        $.get('/process/' + file.resource_id);
       });
 
       $('#fileupload_control .process').removeAttr('disabled');
