@@ -11,6 +11,7 @@ class Picture(models.Model):
     """
     file = models.FileField(upload_to="pictures")
     file_type = models.CharField(max_length=3, blank=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(max_length=50, blank=True)
 
     def __str__(self):
