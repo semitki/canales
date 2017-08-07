@@ -60,6 +60,11 @@ $(function () {
     .on('fileuploadsend', function(e, data) {
       data.data.set('file_type',
         dominator.files.get(data.data.get('file').name.split('.')[0]).type);
+    })
+    .on('fileuploadcompleted', function(e, data) {
+     $('#fileupload_controls .process').removeAttr('disabled');
+      console.log('subidos');
+      console.log(data);
     });
 
     // Enable iframe cross-domain access via redirect option:
@@ -73,19 +78,19 @@ $(function () {
     );
 
     // Load existing files:
-    $('#fileupload').addClass('fileupload-processing');
-    $.ajax({
-        // Uncomment the following to send cross-domain cookies:
-        //xhrFields: {withCredentials: true},
-        //url: $('#fileupload').fileupload('option', 'url'),
-        url: '/upload/view/',
-        dataType: 'json',
-        context: $('#fileupload')[0]
-    }).always(function () {
-        $(this).removeClass('fileupload-processing');
-    }).done(function (result) {
-        $(this).fileupload('option', 'done')
-            .call(this, null, {result: result});
-    });
+/*    $('#fileupload').addClass('fileupload-processing');*/
+    //$.ajax({
+        //// Uncomment the following to send cross-domain cookies:
+        ////xhrFields: {withCredentials: true},
+        ////url: $('#fileupload').fileupload('option', 'url'),
+        //url: '/upload/view/',
+        //dataType: 'json',
+        //context: $('#fileupload')[0]
+    //}).always(function () {
+        //$(this).removeClass('fileupload-processing');
+    //}).done(function (result) {
+        //$(this).fileupload('option', 'done')
+            //.call(this, null, {result: result});
+    //});
 
 });
