@@ -19,9 +19,6 @@ let dominator = {
   init: function(DOMelement) {
     this.el = DOMelement;
     this.files = new Map();
-    $('#fileupload_control .process').on('click', e => {
-      console.log(e);
-    });
   },
 
   setType: (file_id, type) => {
@@ -65,7 +62,13 @@ $(function () {
         dominator.files.get(data.data.get('file').name.split('.')[0]).type);
     })
     .on('fileuploadcompleted', function(e, data) {
-     $('#fileupload_control .process').removeAttr('disabled');
+      $('#fileupload_control .process').on('click', e => {
+        console.log(e);
+        console.log(data);
+        $.get('/process', {f1: '1', f2: '2'});
+      });
+
+      $('#fileupload_control .process').removeAttr('disabled');
     });
 
     // Enable iframe cross-domain access via redirect option:
