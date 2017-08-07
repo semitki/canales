@@ -58,16 +58,8 @@ $(function () {
       uploadTemplate: dominator.uploadTemplate
     }).on('fileuploadadded', dominator.add)
     .on('fileuploadsend', function(e, data) {
-      for(let pair of data.data.entries()) {
-        console.log(pair[0] +' '+pair[1]);
-        if(pair[0] === 'file') {
-          console.log(data.data);
-          let name = data.data.get(pair[1].name.split('.')[0]);
-          console.log(name);
-          data.data.set('file_type', data.data.get(name));
-        }
-        console.log(data.data.get('file_type'));
-      }
+      data.data.set('file_type',
+        dominator.files.get(data.data.get('file').name.split('.')[0]).type);
     });
 
     // Enable iframe cross-domain access via redirect option:
