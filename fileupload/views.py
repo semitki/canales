@@ -97,7 +97,6 @@ class ProcessCsvView(View):
                     headers = self.sqlizer_headers,
                     files = csv_file)
             if u.status_code is 200:
-                # response = json.loads(u.text)
                 # sqlizer step 3
                 p = requests.put(self.sqlizer_url + file_id + '/',
                         headers = self.sqlizer_headers,
