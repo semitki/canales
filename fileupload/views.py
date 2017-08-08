@@ -57,12 +57,20 @@ class ProcessCsvView(View):
         self.sqlizer_url = 'https://sqlizer.io/api/files/'
         self.sqlizer_headers = {'Authorization':
                 'Bearer lZicTcPoMhNGbzFmd_S_xox0G2RZ5SST026wUnKstQ88TTvZWa7eFbm3j1QUkelOm-4plUPZWGkhZL7I3ZVzkQ=='}
+        self.status = ['Uploaded',
+                'Analysing',
+                'Processing',
+                'Failed']
 
-    def _monitor(self, file_id):
+    def _monitor(self, file_id, response = None):
         r = requests.get(self.sqlizer_url + file_id + '/',
                 headers = self.sqlizer_headers)
         if r.status_code is 200:
-            return r.text
+            if json.loads(r.text)['Status'] not in self.status and response != None:
+                return json.loads(r.text)
+            else:
+                return self._monitor(file_id = file_id,
+                        response = json.loads(r.text)['Status'])
         else:
             return {'error':
                     'Error monitoring file in sqlizer'}
@@ -99,8 +107,6 @@ class ProcessCsvView(View):
                 else:
                     response = {'error':
                             'Error trying to finalize file upload to sqlizer'}
-
-
             else:
                 response = {'error':
                         'Error trying to upload file to sqlizer'}
