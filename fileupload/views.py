@@ -4,10 +4,11 @@ import json
 
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import CreateView, DeleteView, ListView, View
-#from django.views import View
 from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
+import requests
+
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +54,20 @@ class PictureListView(ListView):
 class ProcessCsvView(View):
 
     def get(self, request, *args, **kwargs):
-        return JsonResponse({'hello': 'world'})
+        sqlizer_url = 'https://sqlizer.io/api/files/'
+        sqlizer_headers = {'Authorization':
+                'Bearer lZicTcPoMhNGbzFmd_S_xox0G2RZ5SST026wUnKstQ88TTvZWa7eFbm3j1QUkelOm-4plUPZWGkhZL7I3ZVzkQ=='}
+        resource_id = request.path.split('/')[2]
+        csv = Picture.objects.get(pk = resource_id)
+        data = {'DatabaseType': 'SQLServer',
+            'FileType': 'csv',
+            'FileName': csv.slug,
+            'TableName': csv.file_type,
+            'FileHasHeaders': True
+            }
+        r = requests.post(sqlizer_url, headers = sqlizer_headers,
+                data = data)
+        return JsonResponse(r.text, safe=False)
 
 
 ## maybe the shit below can go away
