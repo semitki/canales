@@ -3,8 +3,8 @@ import logging
 import json
 
 from django.http import HttpResponse, JsonResponse
-from django.views.generic import CreateView, DeleteView, ListView
-from django.views import View
+from django.views.generic import CreateView, DeleteView, ListView, View
+#from django.views import View
 from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
