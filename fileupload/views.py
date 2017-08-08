@@ -2,8 +2,9 @@
 import logging
 import json
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import CreateView, DeleteView, ListView
+from django.views import View
 from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
@@ -48,6 +49,14 @@ class PictureListView(ListView):
         response['Content-Disposition'] = 'inline; filename=files.json'
         return response
 
+
+class ProcessCsvView(View):
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse({'hello': 'world'})
+
+
+## maybe the shit below can go away
 
 class BasicVersionCreateView(PictureCreateView):
     template_name_suffix = '_basic_form'
