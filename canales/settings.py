@@ -129,6 +129,8 @@ STATICFILES_DIRS = [
     'file-upload/static',
 ]
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'file-upload')
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'canales', 'media')
 
