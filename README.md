@@ -14,3 +14,4 @@
 
 
 MariaDB `root` passsword `123asdqwe`
+.
