@@ -113,11 +113,6 @@ class ProcessCsvView(View):
                             sqlCommands = queries.split(';')
                             conn = mdb.connect(host="127.0.0.1", user="root",passwd="123asdqwe",db="canalesdb")
                             with conn:
-                                # try: 
-                                #     db = conn.cursor()
-                                #     db.execute(queries)
-                                # except  Exception as e:
-                                #     response = {'error':e}
                                 cur = conn.cursor()
                                 for command in sqlCommands:
                                     try:
@@ -131,10 +126,6 @@ class ProcessCsvView(View):
                             #with open(fileName, "w") as text_file:
                             #    text_file.write(queries)
                             #text_file.close()
-                            ################# exec -i canales_db_1 mysql  -uroot -p123asdqwe canalesdb < '+ fileName
-                            #process = Popen(['/usr/local/bin/docker', 'exec', '-i', 'canales_db_1',
-                            #    'mysql','-uroot','-p123asdqwe','canalesdb < '+fileName], stdout=PIPE, stdin=PIPE)
-                            #response = process.communicate()
                         else:
                             response = {'error':
                                     'Error saving processed SQL file'}
