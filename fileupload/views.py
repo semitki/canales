@@ -1,15 +1,14 @@
 # encoding: utf-8
 import logging
 import json
-from io import BytesIO
-
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import CreateView, DeleteView, ListView, View
 from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
 import requests
-
+import MySQLdb as mdb
+from subprocess import Popen, PIPE
 
 logger = logging.getLogger(__name__)
 
@@ -107,20 +106,40 @@ class ProcessCsvView(View):
                     # TODO maybe _monitor should return status and percentage completed
                     response = self._monitor(file_id)
                     if response['Status'] == 'Complete':
-                        pass
-                        #response = {'que': 'pedo'}
-                        # d = requests.get(response['ResultUrl'])
-                        # if d.status_code is 200:
-                            # response = d.content
-                            # # with open('/tmp/algo.sql', 'wb') as fd:
-                                # # for chunk in d.iter_content(chunk_size=128):
-                                    # # fd.write(chunk)
-                        # else:
-                            # response = {'error':
-                                    # 'Error saving processed SQL file'}
-                    # else:
-#                         response = {'error':
-                                # 'Error processing SQL file'}
+                        sqlFile = requests.get(response['ResultUrl'])
+                        if sqlFile.status_code is 200:
+                            queries = sqlFile.content
+                            #Execute queries
+                            sqlCommands = queries.split(';')
+                            conn = mdb.connect(host="127.0.0.1", user="root",passwd="123asdqwe",db="canalesdb")
+                            with conn:
+                                # try: 
+                                #     db = conn.cursor()
+                                #     db.execute(queries)
+                                # except  Exception as e:
+                                #     response = {'error':e}
+                                cur = conn.cursor()
+                                for command in sqlCommands:
+                                    try:
+                                        if command.strip() != '':
+                                            cur.execute(command)
+                                    except Exception as e:
+                                        response = {'error':e}
+
+                            #Save file to disk
+                            #fileName = "/tmp/"+response['TableName']+".sql"
+                            #with open(fileName, "w") as text_file:
+                            #    text_file.write(queries)
+                            #text_file.close()
+                            ################# exec -i canales_db_1 mysql  -uroot -p123asdqwe canalesdb < '+ fileName
+                            #process = Popen(['/usr/local/bin/docker', 'exec', '-i', 'canales_db_1',
+                            #    'mysql','-uroot','-p123asdqwe','canalesdb < '+fileName], stdout=PIPE, stdin=PIPE)
+                            #response = process.communicate()
+                        else:
+                            response = {'error':
+                                    'Error saving processed SQL file'}
+                    else:
+                        response = {'error': 'Error processing SQL file'}
                 else:
                     response = {'error':
                             'Error trying to finalize file upload to sqlizer'}
@@ -131,7 +150,7 @@ class ProcessCsvView(View):
             response = {'error':
                     'Error trying to initate file conversion on sqlizer'}
 
-        return JsonResponse(response['ResultUrl'], safe=False)
+        return JsonResponse(response, safe=False)
 
 
 ## maybe the shit below can go away
