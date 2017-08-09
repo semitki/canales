@@ -13,4 +13,4 @@
     python manage.py runserver
 
 
-
+MariaDB `root` passsword `123asdqwe`
