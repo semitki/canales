@@ -27,7 +27,7 @@ def upload_js():
         </td>
         <td>
             {% if (!o.files.error && !i && !o.options.autoUpload) { %}
-                <button class="btn btn-primary start">
+                <button class="btn btn-primary start" style="display: none;">
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>{%=locale.fileupload.start%}</span>
                 </button>
@@ -38,6 +38,14 @@ def upload_js():
                     <span>{%=locale.fileupload.cancel%}</span>
                 </button>
             {% } %}
+        </td>
+        <td>
+            <select name="{%=file.name.split('.')[0]%}" class="form-control"
+            id="{%=file.name.split('.')[0]%}" class="file_type">
+                <option value="">Seleccione</option>
+                <option value="pat">Paciente</option>
+                <option value="cas">Caso<option>
+            </select>
         </td>
     </tr>
 {% } %}
@@ -75,9 +83,3 @@ def upload_js():
 {% } %}
 </script>
 """)
-
-
-
-
-
-

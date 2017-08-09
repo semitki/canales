@@ -15,37 +15,60 @@
 
 let dominator = {
 
-  init: function() {
-    this.fileNumber = 0;
+  init: function(DOMelement) {
+    this.el = DOMelement;
+    this.files = new Map();
   },
 
-  getCount: function() {
-    return this.fileNumber;
-  },
-
-  increment: function() {
-    if(this.fileNumber < 2) {
-      this.fileNumber++;
+  setType: (file_id, type) => {
+    if(dominator.files.has(file_id)) {
+      dominator.files.get(file_id).type = type;
     }
   },
 
-  decrement: function() {
-    if(this.fileNumber > 0) {
-      this.fileNumber--;
+  add: (e, data) => {
+    let element = $('select#' + data.files[0].name.split('.')[0]);
+    if(!dominator.files.has(element[0].id)) {
+      dominator.files.set(element[0].id,
+        {
+          type: ''
+        }
+      );
+      element.on('change', (e) => {
+        dominator.setType(element[0].id, e.currentTarget.value);
+      });
+    } else {
+      data.abort(); // TODO make it abort add
     }
-  }
-};
+  },
+
+}
 
 $(function () {
     'use strict';
 
-    dominator.init();
+  dominator.init($('#fileupload')); // Initialize the dominator
 
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
         // Uncomment the following to send cross-domain cookies:
         //xhrFields: {withCredentials: true},
         //url: 'server/php/'
+      uploadTemplate: dominator.uploadTemplate
+    }).on('fileuploadadded', dominator.add)
+    .on('fileuploadsend', function(e, data) {
+      data.data.set('file_type',
+        dominator.files.get(data.data.get('file').name.split('.')[0]).type);
+    })
+    .on('fileuploadcompleted', function(e, data) {
+      $('#fileupload_control .process').on('click', e => {
+        console.log(data.result);
+        let key = undefined;
+        let file = data.result.files[0];
+        $.get('/process/' + file.resource_id);
+      });
+
+      $('#fileupload_control .process').removeAttr('disabled');
     });
 
     // Enable iframe cross-domain access via redirect option:
@@ -57,47 +80,4 @@ $(function () {
             '/cors/result.html?%s'
         )
     );
-
-    if (window.location.hostname === 'blueimp.github.io') {
-        // Demo settings:
-        $('#fileupload').fileupload('option', {
-            url: '//jquery-file-upload.appspot.com/',
-            // Enable image resizing, except for Android and Opera,
-            // which actually support image resizing, but fail to
-            // send Blob objects via XHR requests:
-            disableImageResize: /Android(?!.*Chrome)|Opera/
-                .test(window.navigator.userAgent),
-            maxFileSize: 5000000,
-            acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i
-        });
-        // Upload server status check for browsers with CORS support:
-        if ($.support.cors) {
-            $.ajax({
-                url: '//jquery-file-upload.appspot.com/',
-                type: 'HEAD'
-            }).fail(function () {
-                $('<div class="alert alert-danger"/>')
-                    .text('Upload server currently unavailable - ' +
-                            new Date())
-                    .appendTo('#fileupload');
-            });
-        }
-    } else {
-        // Load existing files:
-        $('#fileupload').addClass('fileupload-processing');
-        $.ajax({
-            // Uncomment the following to send cross-domain cookies:
-            //xhrFields: {withCredentials: true},
-            //url: $('#fileupload').fileupload('option', 'url'),
-            url: '/upload/view/',
-            dataType: 'json',
-            context: $('#fileupload')[0]
-        }).always(function () {
-            $(this).removeClass('fileupload-processing');
-        }).done(function (result) {
-            $(this).fileupload('option', 'done')
-                .call(this, null, {result: result});
-        });
-    }
-
 });
