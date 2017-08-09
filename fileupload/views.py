@@ -1,6 +1,7 @@
 # encoding: utf-8
 import logging
 import json
+from io import BytesIO
 
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import CreateView, DeleteView, ListView, View
@@ -79,7 +80,7 @@ class ProcessCsvView(View):
         resource_id = request.path.split('/')[2]
         csv = Picture.objects.get(pk = resource_id)
         ts = csv.timestamp.strftime("%Y%m%d%H%M%S")
-        data = {'DatabaseType': 'SQLServer',
+        data = {'DatabaseType': 'MySQL',
             'FileType': 'csv',
             'FileName': csv.slug,
             'TableName': 'nw' + csv.file_type + ts,
@@ -102,7 +103,24 @@ class ProcessCsvView(View):
                         headers = self.sqlizer_headers,
                         data = {'Status': 'Uploaded'})
                 if p.status_code is 200:
+                    # sqlizer step 4, check until 'Complete' is returned
+                    # TODO maybe _monitor should return status and percentage completed
                     response = self._monitor(file_id)
+                    if response['Status'] == 'Complete':
+                        pass
+                        #response = {'que': 'pedo'}
+                        # d = requests.get(response['ResultUrl'])
+                        # if d.status_code is 200:
+                            # response = d.content
+                            # # with open('/tmp/algo.sql', 'wb') as fd:
+                                # # for chunk in d.iter_content(chunk_size=128):
+                                    # # fd.write(chunk)
+                        # else:
+                            # response = {'error':
+                                    # 'Error saving processed SQL file'}
+                    # else:
+#                         response = {'error':
+                                # 'Error processing SQL file'}
                 else:
                     response = {'error':
                             'Error trying to finalize file upload to sqlizer'}
@@ -113,7 +131,7 @@ class ProcessCsvView(View):
             response = {'error':
                     'Error trying to initate file conversion on sqlizer'}
 
-        return JsonResponse(response, safe=False)
+        return JsonResponse(response['ResultUrl'], safe=False)
 
 
 ## maybe the shit below can go away
