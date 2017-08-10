@@ -152,6 +152,15 @@ class ProcessCsvView(View):
         return JsonResponse(response, safe=False)
 
 
+class PostProcessView(View):
+
+    def __init__(self):
+        pass
+
+    def get(self, request, *args, **kwargs):
+        JsonResponse(request.body, safe=False)
+
+
 ## maybe the shit below can go away
 
 class BasicVersionCreateView(PictureCreateView):
