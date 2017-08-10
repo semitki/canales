@@ -18,6 +18,7 @@ let dominator = {
   init: function(DOMelement) {
     this.el = DOMelement;
     this.files = new Map();
+    this.processed = 0;
   },
 
   setType: (file_id, type) => {
@@ -42,10 +43,14 @@ let dominator = {
     }
   },
 
+  processed: data => {
+    console.log('ya terminaron los 2 archivos haz algo aqui');
+  }
+
 }
 
 $(function () {
-    'use strict';
+  'use strict';
 
   dominator.init($('#fileupload')); // Initialize the dominator
 
@@ -62,10 +67,22 @@ $(function () {
     })
     .on('fileuploadcompleted', function(e, data) {
       $('#fileupload_control .process').on('click', e => {
-        console.log(data.result);
         let key = undefined;
         let file = data.result.files[0];
-        $.get('/process/' + file.resource_id);
+        $.get('/process/' + file.resource_id,
+          {},
+          function(response) {
+            if(response.Status === 'Complete') {
+              console.log(dominator.processed)
+              if(dominator.processed < 2) {
+                dominator.processed++;
+              }
+              if(dominator.processed == 2) {
+                console.log('terminados ambos 2');
+                dominator.processed({});
+              }
+            }
+        });
       });
 
       $('#fileupload_control .process').removeAttr('disabled');
