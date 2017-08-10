@@ -1,6 +1,7 @@
 # encoding: utf-8
 import logging
 import json
+from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import CreateView, DeleteView, ListView, View
 from .models import Picture
@@ -69,6 +70,7 @@ class ProcessCsvView(View):
             if json.loads(r.text)['Status'] not in self.status and response != None:
                 return json.loads(r.text)
             else:
+                # TODO randomize time for re-check
                 return self._monitor(file_id = file_id,
                         response = json.loads(r.text)['Status'])
         else:
@@ -104,6 +106,7 @@ class ProcessCsvView(View):
                 if p.status_code is 200:
                     # sqlizer step 4, check until 'Complete' is returned
                     # TODO maybe _monitor should return status and percentage completed
+                    # and keep checking for Completed asynchronously
                     response = self._monitor(file_id)
                     if response['Status'] == 'Complete':
                         sqlFile = requests.get(response['ResultUrl'])
@@ -111,7 +114,10 @@ class ProcessCsvView(View):
                             queries = sqlFile.content
                             #Execute queries
                             sqlCommands = queries.split(';')
-                            conn = mdb.connect(host="127.0.0.1", user="root",passwd="123asdqwe",db="canalesdb")
+                            conn = mdb.connect(host=settings.DATABASES['default']['HOST'],
+                                    user=settings.DATABASES['default']['USER'],
+                                    passwd=settings.DATABASES['default']['PASSWORD'],
+                                    db=settings.DATABASES['default']['NAME'])
                             with conn:
                                 cur = conn.cursor()
                                 for command in sqlCommands:
