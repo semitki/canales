@@ -35,7 +35,6 @@ let dominator = {
     let element = $('select#' + data.files[0].name.split('.')[0]);
     // if(!dominator.files.has(element[0].id)) {
     if(dominator.queueFiles < 2) {
-      console.log(dominator.queueFiles);
       dominator.files.set(element[0].id,
         {
           type: ''
@@ -61,17 +60,23 @@ let dominator = {
       function(response) {
         if(response.Status === 'Complete') {
           if(dominator.processedFiles < 2) {
+            dominator.files.get(response.FileName.split('.')[0]).data = response
             dominator.processedFiles++;
           }
           if(dominator.processedFiles == 2) {
-            console.log('terminados ambos 2');
-            dominator.processed({});
+            let data = {};
+            dominator.files.forEach((k, v) => {
+              data[v] = k;
+            });
+            console.log(data);
+            dominator.processed(data);
           }
         }
     });
   },
 
   processed: data => {
+    console.log(data);
     $.get('/postproc/',
       data,
       function(reponse) {
