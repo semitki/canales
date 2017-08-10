@@ -18,7 +18,7 @@ let dominator = {
   init: function(DOMelement) {
     this.el = DOMelement;
     this.files = new Map();
-    this.processed = 0;
+    this.processedFiles = 0;
   },
 
   setType: (file_id, type) => {
@@ -73,11 +73,10 @@ $(function () {
           {},
           function(response) {
             if(response.Status === 'Complete') {
-              console.log(dominator.processed)
-              if(dominator.processed < 2) {
-                dominator.processed++;
+              if(dominator.processedFiles < 2) {
+                dominator.processedFiles++;
               }
-              if(dominator.processed == 2) {
+              if(dominator.processedFiles == 2) {
                 console.log('terminados ambos 2');
                 dominator.processed({});
               }
