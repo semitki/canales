@@ -12,6 +12,7 @@ import MySQLdb as mdb
 from subprocess import Popen, PIPE
 
 logger = logging.getLogger(__name__)
+database = settings.DATABASES['default']
 
 class PictureCreateView(CreateView):
     model = Picture
@@ -81,10 +82,11 @@ class ProcessCsvView(View):
         resource_id = request.path.split('/')[2]
         csv = Picture.objects.get(pk = resource_id)
         ts = csv.timestamp.strftime("%Y%m%d%H%M%S")
+        tableName = 'nw' + csv.file_type + ts
         data = {'DatabaseType': 'MySQL',
             'FileType': 'csv',
             'FileName': csv.slug,
-            'TableName': 'nw' + csv.file_type + ts,
+            'TableName': tableName,
             'FileHasHeaders': True
             }
         # sqlizer step 1
@@ -114,10 +116,10 @@ class ProcessCsvView(View):
                             queries = sqlFile.content
                             #Execute queries
                             sqlCommands = queries.split(';')
-                            conn = mdb.connect(host=settings.DATABASES['default']['HOST'],
-                                    user=settings.DATABASES['default']['USER'],
-                                    passwd=settings.DATABASES['default']['PASSWORD'],
-                                    db=settings.DATABASES['default']['NAME'])
+                            conn = mdb.connect(host=database['HOST'],
+                                    user=database['USER'],
+                                    passwd=database['PASSWORD'],
+                                    db=database['NAME'])
                             with conn:
                                 cur = conn.cursor()
                                 for command in sqlCommands:
@@ -128,10 +130,10 @@ class ProcessCsvView(View):
                                         response = {'error':e}
 
                             #Save file to disk
-                            #fileName = "/tmp/"+response['TableName']+".sql"
-                            #with open(fileName, "w") as text_file:
-                            #    text_file.write(queries)
-                            #text_file.close()
+                            fileName = tableName+".sql"
+                            with open(fileName, "w") as text_file:
+                                text_file.write(queries)
+                            text_file.close()
                         else:
                             response = {'error':
                                     'Error saving processed SQL file'}
