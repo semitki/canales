@@ -112,8 +112,9 @@ let dominator = {
         if(file_id !== k) {
           console.log('el otro');
           if(dominator.files.get(k).type === sel.val()) {
+            $('button.start').attr('disabled', 'disabled');
             sel.val("");
-            dominator.files.get(file_id).type = "";
+            dominator.files.get(k).type = "";
             alert("File can't be of the same type");
             return;
           }
@@ -128,7 +129,6 @@ let dominator = {
             $('button.start').removeAttr('disabled');
           }
         }
-        
       }
 
     });
