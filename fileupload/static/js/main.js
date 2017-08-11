@@ -56,6 +56,11 @@ let dominator = {
     }
   },
 
+  beforeUpload: data => {
+    data.data.set('file_type',
+      dominator.files.get(data.data.get('file').name.split('.')[0]).type);
+  },
+
   /**
    * Callback function to send uploaded files to processing in sqlizer
    */
@@ -104,8 +109,7 @@ $(function () {
     }).on('fileuploadadded', dominator.add)
     .on('fileuploadsend', function(e, data) {
       // TODO make file type select elements mutally exclusive
-      data.data.set('file_type',
-        dominator.files.get(data.data.get('file').name.split('.')[0]).type);
+     dominator.beforeUpload(data);
     })
     .on('fileuploadcompleted', function(e, data) {
       $('#fileupload_control .process').on('click',
