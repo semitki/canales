@@ -32,9 +32,11 @@ let dominator = {
    * Callback function triggered when files have been added to upload queue
    */
   add: (e, data) => {
+    console.log(data);
+    dominator.queueFiles++
     let element = $('select#' + data.files[0].name.split('.')[0]);
     // if(!dominator.files.has(element[0].id)) {
-    if(dominator.queueFiles < 2) {
+    if(dominator.queueFiles <= 1) {
       dominator.files.set(element[0].id,
         {
           type: ''
@@ -43,9 +45,11 @@ let dominator = {
       element.on('change', (e) => {
         dominator.setType(element[0].id, e.currentTarget.value);
       });
-      dominator.queueFiles++;
     } else {
       data.abort(); // TODO make it abort add
+    }
+    if(dominator.queueFiles == 2) {
+      $('button.start').removeAttr('disabled');
     }
   },
 
@@ -84,7 +88,6 @@ let dominator = {
     });
     console.log('LIBERAR PANTALLA');
   }
-
 }
 
 $(function () {
