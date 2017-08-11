@@ -19,22 +19,18 @@ let dominator = {
     this.el = DOMelement;
     this.files = new Map();   // Metadata related to uploaded files
     this.queueFiles = 0;      // Files in the process queue
+    this.queueReady = false;
     this.processedFiles = 0;  // Number of succesfully processed files
-  },
-
-  setType: (file_id, type) => {
-    if(dominator.files.has(file_id)) {
-      dominator.files.get(file_id).type = type;
-    }
   },
 
   /**
    * Callback function triggered when files have been added to upload queue
    */
   add: (e, data) => {
+    dominator.queueFiles++
     let element = $('select#' + data.files[0].name.split('.')[0]);
-    // if(!dominator.files.has(element[0].id)) {
-    if(dominator.queueFiles < 2) {
+    console.log(dominator.queueFiles);
+    if(dominator.queueFiles <= 2) {
       dominator.files.set(element[0].id,
         {
           type: ''
@@ -43,9 +39,23 @@ let dominator = {
       element.on('change', (e) => {
         dominator.setType(element[0].id, e.currentTarget.value);
       });
-      dominator.queueFiles++;
     } else {
+      console.log('aborta mision');
       data.abort(); // TODO make it abort add
+    }
+    if(dominator.queueFiles == 2) {
+      // TODO I thougt I could re-enable buttons here but no
+    }
+  },
+
+  beforeUpload: data => {
+    if(dominator.queueFiles == 2) {
+      let name = data.data.get('file').name.split('.')[0];
+      let file_type = data.data.get('file').name.split('.')[0].type;
+      data.data.set('file_type', dominator.files.get(file_type));
+      $('button.process').removeAttr('disabled');
+    } else {
+      alert('There must be at least 2 files to upload!');
     }
   },
 
@@ -75,6 +85,10 @@ let dominator = {
     });
   },
 
+  /**
+   * Callback funtion that triggers when each file returns a succesful state
+   * from sqlizer
+   */
   processed: data => {
     console.log('FALTA BLOQUEAR PANTALLA');
     $.get('/postproc/',
@@ -83,7 +97,30 @@ let dominator = {
         console.log(response);
     });
     console.log('LIBERAR PANTALLA');
-  }
+  },
+
+  /**
+   * Mutex function for file types
+   */
+  setType: (file_id, file_type) => {
+    console.log(file_id + ' '+file_type);
+    if(dominator.files.has(file_id)) {
+      dominator.files.get(file_id).type = file_type;
+    }
+
+    // Enable start upoad button only when files have file type
+    let count = 0;
+    dominator.files.forEach((v, k) => {
+      if(v.type != undefined && v.type.length != 0
+        && dominator.queueFiles == 2) {
+        count++;
+        if(count == 2) {
+          dominator.queueReady = true;
+          $('button.start').removeAttr('disabled');
+        }
+      }
+    });
+  },
 
 }
 
@@ -95,16 +132,14 @@ $(function () {
     // Initialize the jQuery File Upload widget:
     $('#fileupload').fileupload({
       uploadTemplate: dominator.uploadTemplate
-    }).on('fileuploadadded', dominator.add)
+    })
+    .on('fileuploadadded', dominator.add)
     .on('fileuploadsend', function(e, data) {
-      // TODO make file type select elements mutally exclusive
-      data.data.set('file_type',
-        dominator.files.get(data.data.get('file').name.split('.')[0]).type);
+     dominator.beforeUpload(data);
     })
     .on('fileuploadcompleted', function(e, data) {
       $('#fileupload_control .process').on('click',
         dominator.processFiles(data));
-      $('#fileupload_control .process').removeAttr('disabled');
     });
 
     // Enable iframe cross-domain access via redirect option:
