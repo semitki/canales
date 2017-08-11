@@ -104,7 +104,7 @@ $(function () {
     .on('fileuploadcompleted', function(e, data) {
       $('#fileupload_control .process').on('click',
         dominator.processFiles(data));
-      $('#fileupload_control .process').removeAttr('disabled');
+        $('#fileupload_control .process').removeAttr('disabled');
     });
 
     // Enable iframe cross-domain access via redirect option:
