@@ -106,16 +106,22 @@ let dominator = {
     if(dominator.files.has(file_id)) {
       dominator.files.get(file_id).type = file_type;
     }
-
-    // Enable start upoad button only when files have file type
+console.log(dominator.files.get(file_id).type);
     let count = 0;
     dominator.files.forEach((v, k) => {
-      if(v.type != undefined && v.type.length != 0
-        && dominator.queueFiles == 2) {
-        count++;
-        if(count == 2) {
-          dominator.queueReady = true;
-          $('button.start').removeAttr('disabled');
+      let sel = $('select#' + file_id);
+      console.log(sel.val() +' '+ sel.val().length +' '+typeof(sel.val()));
+      if(sel.val() != file_type
+        && (sel.val() != undefined || sel.val().length > 0)) {
+        sel.val(file_type);
+        if(v.type != undefined && v.type.length != 0
+          && dominator.queueFiles == 2) {
+          count++;
+          if(count == 2) {
+          // Enable start upoad button only when files have file type
+            dominator.queueReady = true;
+            $('button.start').removeAttr('disabled');
+          }
         }
       }
     });
