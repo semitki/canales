@@ -49,13 +49,14 @@ let dominator = {
 
   beforeUpload: data => {
     if(dominator.queueFiles == 2) {
-      let name = data.data.get('file').name.split('.')[0];
-      let file_type = data.data.get('file').name.split('.')[0].type;
-      data.data.set('file_type', dominator.files.get(file_type));
+      let name = data.get('file').name.split('.')[0];
+      let file_type = dominator.files.get(name).type;
+      data.set('file_type', file_type);
       $('button.process').removeAttr('disabled');
     } else {
       alert('There must be at least 2 files to upload!');
     }
+    return data;
   },
 
   /**
@@ -102,7 +103,6 @@ let dominator = {
    * Mutex function for file types
    */
   setType: (file_id, file_type) => {
-    console.log(file_id + ' '+file_type);
     if(dominator.files.has(file_id)) {
       dominator.files.get(file_id).type = file_type;
     }
@@ -134,7 +134,9 @@ $(function () {
     })
     .on('fileuploadadded', dominator.add)
     .on('fileuploadsend', function(e, data) {
-     dominator.beforeUpload(data);
+      console.log(data.data.values());
+     data.data = dominator.beforeUpload(data.data);
+      console.log(data.data.values());
     })
     .on('fileuploadcompleted', function(e, data) {
       $('#fileupload_control .process').on('click',
