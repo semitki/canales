@@ -50,6 +50,9 @@ let dominator = {
     }
     if(dominator.queueFiles == 2) {
       $('button.start').removeAttr('disabled');
+      $('button.cancel').removeAttr('disabled');
+      $('button.delete').removeAttr('disabled');
+      $('input[type="checkbox"].toggle').removeAttr('disabled');
     }
   },
 
