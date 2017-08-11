@@ -258,33 +258,54 @@ class PostProcessView(View):
 
         if TABLECAS!="" and TABLEPAT!="":
             TABLEPATCAS="nwpatcas"+str(TS)
-            sqlPATCAS = ("CREATE TABLE "+TABLEPATCAS+" AS "
-                "SELECT chart_number, MAX(case_number) as case_number, count(*) as many "
-                "FROM "+TABLECAS+" GROUP BY chart_number;")
 
-            #ES NECESARIO CREAR TABLEPATCAS RESTANDO A LOS PATCAS PREVIAMENTE CREADOS
-            #SELECT table_name FROM information_schema.tables where table_name like 'nwpatcas%';
-
-
-            sqlReport = sqlReport.replace('@TABLEPATCAS', TABLEPATCAS)
-            sqlReport = sqlReport.replace('@TABLEPAT', TABLEPAT)
-            sqlReport = sqlReport.replace('@TABLECAS', TABLECAS)
-            
-            sqlMAXID = "SELECT coalesce(max(id),0)+1 FROM explorer_query;"
             conn = mdb.connect(host=database['HOST'],
                                 user=database['USER'],
                                 passwd=database['PASSWORD'],
                                 db=database['NAME'])
+
+            sqlReport = sqlReport.replace('@TABLEPATCAS', TABLEPATCAS)
+            sqlReport = sqlReport.replace('@TABLEPAT', TABLEPAT)
+            sqlReport = sqlReport.replace('@TABLECAS', TABLECAS)
+
+            
             with conn:
                 cur = conn.cursor()
+
                 try:
+
+            
+                    sqlPATCAS = ("CREATE TABLE "+TABLEPATCAS+" AS "
+                        "SELECT chart_number, MAX(case_number) AS case_number, "
+                        "COUNT(*) AS many "
+                        "FROM "+TABLECAS+
+                        " WHERE 1=1 ")
+
+                    sqlWhere = ("SELECT table_name "
+                        "FROM information_schema.tables "
+                        "WHERE table_name LIKE 'nwpatcas%'")
+                   
+                    cur.execute(sqlWhere)
+                    row = cur.fetchone()
+                    sqlFilter = ""
+                    while row is not None:
+                      sqlFilter = sqlFilter +(" AND chart_number NOT IN ("
+                        "SELECT DISTINCT chart_number "
+                        "FROM "+ row[0]+")")
+                      row = cur.fetchone()
+                    
+                    sqlPATCAS = sqlPATCAS + sqlFilter +" GROUP BY chart_number;"
+                    #salida['patcasSQL']=sqlPATCAS
+                    cur.execute(sqlPATCAS)
+                    
+                    sqlMAXID = "SELECT coalesce(max(id),0)+1 FROM explorer_query;"
                     cur.execute(sqlMAXID)
                     MAXID = int(cur.fetchone()[0])
+                    
                     sqlReport = sqlReport.replace('@MAXID', str(MAXID))
-                    cur.execute(sqlPATCAS)
                     cur.execute(sqlReport)
                     #salida['reporte']=sqlReport
-                    #salida['patcas']=sqlPATCAS
+                    
                     salida['patcas']=TABLEPATCAS
                 except Exception as e:
                     salida = {'error':e}
