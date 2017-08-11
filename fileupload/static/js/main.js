@@ -103,17 +103,22 @@ let dominator = {
    * Mutex function for file types
    */
   setType: (file_id, file_type) => {
-    if(dominator.files.has(file_id)) {
-      dominator.files.get(file_id).type = file_type;
-    }
-console.log(dominator.files.get(file_id).type);
     let count = 0;
+    let sel = $('select#' + file_id);
+
     dominator.files.forEach((v, k) => {
-      let sel = $('select#' + file_id);
-      console.log(sel.val() +' '+ sel.val().length +' '+typeof(sel.val()));
-      if(sel.val() != file_type
-        && (sel.val() != undefined || sel.val().length > 0)) {
-        sel.val(file_type);
+      if(sel.val() != undefined || sel.val().length > 0) {
+        // Check values in select to be different
+        if(file_id !== k) {
+          console.log('el otro');
+          if(dominator.files.get(k).type === sel.val()) {
+            sel.val("");
+            dominator.files.get(file_id).type = "";
+            alert("File can't be of the same type");
+            return;
+          }
+        }
+        dominator.files.get(file_id).type = file_type;
         if(v.type != undefined && v.type.length != 0
           && dominator.queueFiles == 2) {
           count++;
@@ -123,7 +128,9 @@ console.log(dominator.files.get(file_id).type);
             $('button.start').removeAttr('disabled');
           }
         }
+        
       }
+
     });
   },
 
