@@ -64,11 +64,11 @@ let dominator = {
             dominator.processedFiles++;
           }
           if(dominator.processedFiles == 2) {
+            //Send only file type and name of the table created.
             let data = {};
             dominator.files.forEach((k, v) => {
-              data[v] = k;
+              data[k.type] = k.data.TableName;
             });
-            console.log(data);
             dominator.processed(data);
           }
         }
@@ -76,13 +76,13 @@ let dominator = {
   },
 
   processed: data => {
-    console.log(data);
+    console.log('FALTA BLOQUEAR PANTALLA');
     $.get('/postproc/',
       data,
-      function(reponse) {
+      function(response) {
         console.log(response);
     });
-    console.log('ya terminaron los 2 archivos haz algo aqui');
+    console.log('LIBERAR PANTALLA');
   }
 
 }
