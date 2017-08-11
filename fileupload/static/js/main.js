@@ -29,7 +29,6 @@ let dominator = {
   add: (e, data) => {
     dominator.queueFiles++
     let element = $('select#' + data.files[0].name.split('.')[0]);
-    console.log(dominator.queueFiles);
     if(dominator.queueFiles <= 2) {
       dominator.files.set(element[0].id,
         {
