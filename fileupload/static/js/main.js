@@ -28,7 +28,7 @@ let dominator = {
    * Callback function triggered when files have been added to upload queue
    */
   add: (e, data) => {
-    dominator.queueFiles++
+    dominator.queueFiles++;
     let element = $('select#' + data.files[0].name.split('.')[0]);
     if(dominator.queueFiles <= 2) {
       dominator.files.set(element[0].id,
