@@ -43,17 +43,21 @@ let dominator = {
       console.log('aborta mision');
       data.abort(); // TODO make it abort add
     }
-    if(dominator.queueFiles == 2) {
-      // TODO I thougt I could re-enable buttons here but no
-    }
   },
 
 
+  /**
+   * Callback that fires after uploads are done, upload status does not matter
+   */
   afterUpload: () => {
     $('button.start').attr('disabled', 'disabled');
   },
 
 
+  /**
+   * Callback triggered when Process button is clicked and sets some additional
+   * data to be sent in the request
+   */
   beforeUpload: data => {
     if(dominator.queueFiles == 2) {
       let name = data.get('file').name.split('.')[0];
@@ -73,10 +77,12 @@ let dominator = {
   processFiles: data => {
     let key = undefined;
     let file = data.result.files[0];
-    $('button.process').attr('disabled', 'disabled');
     $.get('/process/' + file.resource_id,
       {},
       function(response) {
+        // TODO Weird, if I disable the process button outside the $.get request,
+        // it is triggered automatically on diabling the button programatically
+        $('button.process').attr('disabled', 'disabled');
         if(response.Status === 'Complete') {
           if(dominator.processedFiles < 2) {
             dominator.files.get(response.FileName.split('.')[0]).data = response
@@ -101,6 +107,8 @@ let dominator = {
    */
   processed: data => {
     console.log('FALTA BLOQUEAR PANTALLA');
+    $('button.delete').hide();
+    $('input.toggle').hide();
     $.get('/postproc/',
       data,
       function(response) {
