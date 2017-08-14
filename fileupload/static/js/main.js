@@ -75,6 +75,7 @@ let dominator = {
    * Callback function to send uploaded files to processing in sqlizer
    */
   processFiles: data => {
+    $.blockUI();
     let key = undefined;
     let file = data.result.files[0];
     $.get('/process/' + file.resource_id,
@@ -106,7 +107,6 @@ let dominator = {
    * from sqlizer
    */
   processed: data => {
-    console.log('FALTA BLOQUEAR PANTALLA');
     $('button.delete').hide();
     $('input.toggle').hide();
     $.get('/postproc/',
@@ -114,7 +114,7 @@ let dominator = {
       function(response) {
         console.log(response);
     });
-    console.log('LIBERAR PANTALLA');
+    $.unblockUI();
   },
 
 
