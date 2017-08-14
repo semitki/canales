@@ -115,7 +115,7 @@ let dominator = {
             $('button.start').attr('disabled', 'disabled');
             sel.val("");
             dominator.files.get(k).type = "";
-            alert("File can't be of the same type");
+            alert("Files can't be of the same type");
             return;
           }
         }
