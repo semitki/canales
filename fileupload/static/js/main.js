@@ -23,6 +23,7 @@ let dominator = {
     this.processedFiles = 0;  // Number of succesfully processed files
   },
 
+
   /**
    * Callback function triggered when files have been added to upload queue
    */
@@ -47,6 +48,13 @@ let dominator = {
     }
   },
 
+
+  afterUpload: () => {
+    console.log('after upload');
+    $('button.start').attr('disabled', 'disabled');
+  },
+
+
   beforeUpload: data => {
     if(dominator.queueFiles == 2) {
       let name = data.get('file').name.split('.')[0];
@@ -58,6 +66,7 @@ let dominator = {
     }
     return data;
   },
+
 
   /**
    * Callback function to send uploaded files to processing in sqlizer
@@ -85,6 +94,7 @@ let dominator = {
     });
   },
 
+
   /**
    * Callback funtion that triggers when each file returns a succesful state
    * from sqlizer
@@ -99,10 +109,13 @@ let dominator = {
     console.log('LIBERAR PANTALLA');
   },
 
+
   /**
    * Mutex function for file types
    */
   setType: (file_id, file_type) => {
+    // TODO still does not work, various use cases fail
+    // FIX IT ASAP!
     let count = 0;
     let sel = $('select#' + file_id);
 
@@ -110,7 +123,6 @@ let dominator = {
       if(sel.val() != undefined || sel.val().length > 0) {
         // Check values in select to be different
         if(file_id !== k) {
-          console.log('el otro');
           if(dominator.files.get(k).type === sel.val()) {
             $('button.start').attr('disabled', 'disabled');
             sel.val("");
@@ -130,39 +142,39 @@ let dominator = {
           }
         }
       }
-
     });
   },
-
 }
 
+
+// App starts here!
 $(function () {
   'use strict';
 
   dominator.init($('#fileupload')); // Initialize the dominator
 
-    // Initialize the jQuery File Upload widget:
-    $('#fileupload').fileupload({
-      uploadTemplate: dominator.uploadTemplate
-    })
-    .on('fileuploadadded', dominator.add)
-    .on('fileuploadsend', function(e, data) {
-      console.log(data.data.values());
-     data.data = dominator.beforeUpload(data.data);
-      console.log(data.data.values());
-    })
-    .on('fileuploadcompleted', function(e, data) {
-      $('#fileupload_control .process').on('click',
-        dominator.processFiles(data));
-    });
+  // Initialize the jQuery File Upload widget:
+  $('#fileupload').fileupload({
+    uploadTemplate: dominator.uploadTemplate
+  })
+  .on('fileuploadadded', dominator.add)
+  .on('fileuploadalways', dominator.afterUpload)
+  .on('fileuploadcompleted', function(e, data) {
+    $('button.start').attr('disabled');
+    $('#fileupload_control .process').on('click',
+      dominator.processFiles(data));
+  })
+  .on('fileuploadsend', function(e, data) {
+    data.data = dominator.beforeUpload(data.data);
+  });
 
-    // Enable iframe cross-domain access via redirect option:
-    $('#fileupload').fileupload(
-        'option',
-        'redirect',
-        window.location.href.replace(
-            /\/[^\/]*$/,
-            '/cors/result.html?%s'
-        )
-    );
+  // Enable iframe cross-domain access via redirect option:
+  $('#fileupload').fileupload(
+    'option',
+    'redirect',
+    window.location.href.replace(
+      /\/[^\/]*$/,
+      '/cors/result.html?%s'
+    )
+  );
 });
