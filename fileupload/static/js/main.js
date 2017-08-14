@@ -50,7 +50,6 @@ let dominator = {
 
 
   afterUpload: () => {
-    console.log('after upload');
     $('button.start').attr('disabled', 'disabled');
   },
 
@@ -74,6 +73,7 @@ let dominator = {
   processFiles: data => {
     let key = undefined;
     let file = data.result.files[0];
+    $('button.process').attr('disabled', 'disabled');
     $.get('/process/' + file.resource_id,
       {},
       function(response) {
@@ -160,7 +160,6 @@ $(function () {
   .on('fileuploadadded', dominator.add)
   .on('fileuploadalways', dominator.afterUpload)
   .on('fileuploadcompleted', function(e, data) {
-    $('button.start').attr('disabled');
     $('#fileupload_control .process').on('click',
       dominator.processFiles(data));
   })
