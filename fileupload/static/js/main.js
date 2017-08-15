@@ -142,9 +142,8 @@ let dominator = {
           }
         }
         dominator.files.get(file_id).type = file_type;
-        console.log('antes de habilitar');
         if(v.type != undefined && v.type.length != 0
-          && dominator.queueFiles == 2) {
+          && dominator.queueFiles >= 2) {
           count++;
           if(count == 2) {
           // Enable start upoad button only when files have file type
