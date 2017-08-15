@@ -29,6 +29,10 @@ let dominator = {
    */
   add: (e, data) => {
     dominator.queueFiles++;
+    if (dominator.queueFiles > 2) {
+      // TODO Ugh! >.<'  very ugly hack to avoid adding more than two files
+      data.context[0].remove();
+    }
     if(dominator.queueFiles <= 2) {
       let element = $('select#' + data.files[0].name.split('.')[0]);
       dominator.files.set(element[0].id,
@@ -138,6 +142,7 @@ let dominator = {
           }
         }
         dominator.files.get(file_id).type = file_type;
+        console.log('antes de habilitar');
         if(v.type != undefined && v.type.length != 0
           && dominator.queueFiles == 2) {
           count++;
@@ -161,15 +166,7 @@ $(function () {
 
   // Initialize the jQuery File Upload widget:
   $('#fileupload').fileupload({
-    acceptFileTypes: /(\.|\/)(csv)$/i,
-    singleFileUploads: false,
-    uploadTemplate: dominator.uploadTemplate
-  })
-  .on('fileuploadadd', (e, data) => {
-    if(dominator.queueFiles == 2) {
-      let context = data.form.context;
-      c
-    }
+    acceptFileTypes: /(\.|\/)(csv)$/i
   })
   .on('fileuploadadded', dominator.add)
   .on('fileuploadcompleted', function(e, data) {
