@@ -29,8 +29,8 @@ let dominator = {
    */
   add: (e, data) => {
     dominator.queueFiles++;
-    let element = $('select#' + data.files[0].name.split('.')[0]);
     if(dominator.queueFiles <= 2) {
+      let element = $('select#' + data.files[0].name.split('.')[0]);
       dominator.files.set(element[0].id,
         {
           type: ''
@@ -39,9 +39,6 @@ let dominator = {
       element.on('change', (e) => {
         dominator.setType(element[0].id, e.currentTarget.value);
       });
-    } else {
-      console.log('aborta mision');
-      data.abort(); // TODO make it abort add
     }
   },
 
@@ -164,12 +161,14 @@ $(function () {
 
   // Initialize the jQuery File Upload widget:
   $('#fileupload').fileupload({
+    acceptFileTypes: /(\.|\/)(csv)$/i,
+    singleFileUploads: false,
     uploadTemplate: dominator.uploadTemplate
   })
   .on('fileuploadadd', (e, data) => {
-    console.log(data)
     if(dominator.queueFiles == 2) {
-      console.log(data.files);
+      let context = data.form.context;
+      c
     }
   })
   .on('fileuploadadded', dominator.add)
