@@ -63,7 +63,7 @@ let dominator = {
       let name = data.get('file').name.split('.')[0];
       let file_type = dominator.files.get(name).type;
       data.set('file_type', file_type);
-      $('button.process').removeAttr('disabled');
+      // TODO $('button.process').removeAttr('disabled');
     } else {
       alert('There must be at least 2 files to upload!');
     }
@@ -74,7 +74,8 @@ let dominator = {
   /**
    * Callback function to send uploaded files to processing in sqlizer
    */
-  processFiles: data => {
+  processFiles: (data) => {
+    //data.preventDefault();
     $.blockUI();
     let key = undefined;
     let file = data.result.files[0];
@@ -83,7 +84,7 @@ let dominator = {
       function(response) {
         // TODO Weird, if I disable the process button outside the $.get request,
         // it is triggered automatically on diabling the button programatically
-        $('button.process').attr('disabled', 'disabled');
+        // TODO $('button.process').attr('disabled', 'disabled');
         if(response.Status === 'Complete') {
           if(dominator.processedFiles < 2) {
             dominator.files.get(response.FileName.split('.')[0]).data = response
@@ -165,8 +166,13 @@ $(function () {
   $('#fileupload').fileupload({
     uploadTemplate: dominator.uploadTemplate
   })
+  .on('fileuploadadd', (e, data) => {
+    console.log(data)
+    if(dominator.queueFiles == 2) {
+      console.log(data.files);
+    }
+  })
   .on('fileuploadadded', dominator.add)
-  .on('fileuploadalways', dominator.afterUpload)
   .on('fileuploadcompleted', function(e, data) {
     $('#fileupload_control .process').on('click',
       dominator.processFiles(data));
@@ -176,12 +182,12 @@ $(function () {
   });
 
   // Enable iframe cross-domain access via redirect option:
-  $('#fileupload').fileupload(
-    'option',
-    'redirect',
-    window.location.href.replace(
-      /\/[^\/]*$/,
-      '/cors/result.html?%s'
-    )
-  );
+  /*$('#fileupload').fileupload(*/
+    //'option',
+    //'redirect',
+    //window.location.href.replace(
+      ///\/[^\/]*$/,
+      //'/cors/result.html?%s'
+    //)
+  /*);*/
 });
