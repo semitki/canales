@@ -180,10 +180,9 @@ class PostProcessView(View):
                 time.time()).strftime('%Y%m%d%H%M%S')
         DATEFORMATTED=datetime.datetime.fromtimestamp(
                 time.time()).strftime('%B %d, %Y at %H:%M:%S')
-
+        REPORTNAME = "Patient_Record_Upload - "+DATEFORMATTED
         sqlReport = ("INSERT INTO `explorer_query` "
-            "VALUES (@MAXID,CONCAT('Patient_Record_Upload - ',"
-            "'"+DATEFORMATTED+"'), "
+            "VALUES (@MAXID,'"+REPORTNAME+"', "
             "'SELECT\r\n  pc.case_number,\r\n /* Req */ p.First_Name, \r\n    "
             "p.Middle_Name, \r\n /* Req */p.Last_Name, p.Date_of_Birth as DOB,\r\n   "
             "/* Req */CASE p.Sex WHEN \"Female\" then \"F\" WHEN \"Male\" then \"M\" "
@@ -311,6 +310,8 @@ class PostProcessView(View):
                     #salida['reporte']=sqlReport
 
                     salida['patcas']=TABLEPATCAS
+                    salida['reportName']=REPORTNAME
+                    salida['reportLink']="explorer/"+str(MAXID)
                 except Exception as e:
                     salida = {'error':e}
             return JsonResponse(salida,safe=False)
