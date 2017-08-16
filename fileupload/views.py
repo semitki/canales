@@ -142,7 +142,7 @@ class ProcessCsvView(View):
                                         response = {'error':e}
 
                             #Save file to disk
-                            fileName = 'sql/' + tableName+".sql"
+                            fileName = '/tmp/' + tableName+".sql"
                             with open(fileName, "w") as text_file:
                                 text_file.write(queries)
                             text_file.close()
