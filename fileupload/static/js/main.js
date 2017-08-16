@@ -60,6 +60,7 @@ let dominator = {
    * data to be sent in the request
    */
   beforeUpload: data => {
+    $.blockUI({message: 'Uploading files'});
     if(dominator.queueFiles == 2) {
       let name = data.get('file').name.split('.')[0];
       let file_type = dominator.files.get(name).type;
@@ -76,8 +77,9 @@ let dominator = {
    * Callback function to send uploaded files to processing in sqlizer
    */
   processFiles: (data) => {
+    $.blockUI({message:
+      'Converting to SQL. Be patient it can take several minutes'});
     //data.preventDefault();
-    $.blockUI();
     let key = undefined;
     let file = data.result.files[0];
     $.get('/process/' + file.resource_id,
@@ -92,6 +94,7 @@ let dominator = {
             dominator.processedFiles++;
           }
           if(dominator.processedFiles == 2) {
+            $.blockUI({message: 'Generating report'});
             //Send only file type and name of the table created.
             let data = {};
             dominator.files.forEach((k, v) => {
@@ -118,7 +121,11 @@ let dominator = {
           '<a href="/' + response.reportLink + '">'
           + response.reportName + '</a>'
         );
+        alert('Report generated succesfully');
         console.log(response);
+    })
+    .fail(() => {
+      alert('Report failed');
     });
     $.unblockUI();
   },
