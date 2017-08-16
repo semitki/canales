@@ -114,6 +114,10 @@ let dominator = {
     $.get('/postproc/',
       data,
       function(response) {
+        $('#finale').append(
+          '<a href="/' + response.reportLink + '">'
+          + response.reportName + '</a>'
+        );
         console.log(response);
     });
     $.unblockUI();

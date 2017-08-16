@@ -79,6 +79,7 @@ def upload_js():
             </button>
             <input type="checkbox" name="delete" value="1" class="toggle">
         </td>
+        <td id="finale"></td>
     </tr>
 {% } %}
 </script>
