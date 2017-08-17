@@ -136,7 +136,15 @@ class ProcessCsvView(View):
                                         if query.strip() != "":
                                             sql=sql+query
                                     try:
+                                        # Replace some character not acceptable 
+                                        #  '\'    = '' 
+                                        # 'None'  = ''
+                                        # 'True'  = 'yes'
+                                        #  'False'= 'no'
                                         sql = sql.replace("\\","")
+                                        sql = sql.replace("None","")
+                                        sql = sql.replace("True","yes")
+                                        sql = sql.replace("False","no")
                                         cur.execute(sql+");")
                                     except Exception as e:
                                         response = {'error':e}
