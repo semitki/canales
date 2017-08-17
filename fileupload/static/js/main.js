@@ -186,14 +186,4 @@ $(function () {
   .on('fileuploadsend', function(e, data) {
     data.data = dominator.beforeUpload(data.data);
   });
-
-  // Enable iframe cross-domain access via redirect option:
-  /*$('#fileupload').fileupload(*/
-    //'option',
-    //'redirect',
-    //window.location.href.replace(
-      ///\/[^\/]*$/,
-      //'/cors/result.html?%s'
-    //)
-  /*);*/
 });
