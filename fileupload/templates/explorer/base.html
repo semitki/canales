@@ -27,6 +27,9 @@
 </head>
 
 <body>
+
+  {% block sql_explorer_content_takeover %}
+    <div id="wrap" class="wrap">
   <div class="navbar navbar-default navbar-fixed-top">
       <div class="container">
           <div class="navbar-header">
@@ -51,8 +54,6 @@
   </div>
 
 
-  {% block sql_explorer_content_takeover %}
-    <div id="wrap" class="wrap">
         <div class="container">
           <div class="starter-template">
           {% block sql_explorer_content %}{% endblock %}
