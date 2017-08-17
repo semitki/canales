@@ -4,7 +4,7 @@ Pillow==4.2.1
 argparse==1.2.1
 certifi==2017.7.27.1
 chardet==3.0.4
-django-sql-explorer==1.1.1
+-e git+https://github.com/groveco/django-sql-explorer.git@60c60b264ff2b7f7acf9acaab423bb22e8cb61fb#egg=django-sql-explorer
 idna==2.5
 mysql==0.0.1
 olefile==0.44
