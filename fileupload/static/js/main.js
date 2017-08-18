@@ -103,7 +103,8 @@ let dominator = {
             dominator.processed(data);
           }
         }
-    });
+    })
+    .fail(() => { $.unblockUI(); console.log(file); });
   },
 
 
