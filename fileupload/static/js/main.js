@@ -138,21 +138,20 @@ let dominator = {
     // TODO still does not work, various use cases fail
     // FIX IT ASAP!
     let count = 0;
-    let sel = $('select#' + file_id);
-
     dominator.files.forEach((v, k) => {
+      let sel = $('select#' + file_id);
       if(sel.val() != undefined || sel.val().length > 0) {
+        dominator.files.get(file_id).type = file_type;
         // Check values in select to be different
         if(file_id !== k) {
           if(dominator.files.get(k).type === sel.val()) {
             $('button.start').attr('disabled', 'disabled');
-            sel.val("");
+            $('select#'+k).val("");
             dominator.files.get(k).type = "";
             alert("Files can't be of the same type");
             return;
           }
         }
-        dominator.files.get(file_id).type = file_type;
         if(v.type != undefined && v.type.length != 0
           && dominator.queueFiles >= 2) {
           count++;
