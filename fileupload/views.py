@@ -207,6 +207,7 @@ class PostProcessView(View):
             "WHEN \"E\" THEN \"Patient Declined\" ELSE \"Patient Declined\" END AS Race,  \r\n "
             "CASE p.Ethnicity WHEN \"H\" THEN \"Hispanic or Latino\" \r\n "
             "ELSE \"Patient Declined\" END AS Ethnicity,\r\n \r\n "
+            ### ASEGURADORA UNO
             "/* INSURANCE NUMBER 1 DATA  */\r\n "
             "Coalesce(i1.INTERNAL_ID_JUAN, IF(c.Insurance_Carrier_1 IS NULL, NULL,\r\n "
             "CONCAT(\"OLD \",c.Insurance_Carrier_1))) as HF_Payer_ID_P,\r\n "
@@ -222,12 +223,14 @@ class PostProcessView(View):
             "IF(c.Insured_1 IS NULL, NULL, COALESCE(p1.City, p.City)) as Insured_City_P,   \r\n "
             "IF(c.Insured_1 IS NULL, NULL, COALESCE(p1.State,p.State)) as Insured_State_P,  \r\n "
             "IF(c.Insured_1 IS NULL, NULL, COALESCE(p1.Zip_Code, p.Zip_Code)) as Insured_Zip_P,  \r\n "
-            "IF(c.Insured_1 IS NULL, NULL, COALESCE(p1.Phone_1, p.Phone_1, "000-000-0000")) as Insured_Phone_P,\r\n "
+            "IF(c.Insured_1 IS NULL, NULL, COALESCE(p1.Phone_1, p.Phone_1, \"000-000-0000\")) as Insured_Phone_P,\r\n "
             "c.Prior_Authorization_No as Authorization_No_P, \r\n    \r\n "
+            ### EMERGENCY
             "/* EMERGENCY CONTACT DATA */\r\n "
             "LEFT(p.Contact_Name, length(p.Contact_Name) - locate(\" \", reverse(p.Contact_Name))) as Emergency_First_Name, \r\n "
             "SUBSTRING_INDEX(p.Contact_Name, \" \", -1) as Emergency_Last_Name, \r\n "
             "COALESCE(p.Contact_Phone_1, p.Contact_Phone_2) as Emergency_Phone, \"Other\" as Emergency_Relation,\r\n  \r\n "
+            ### ASEGURADORA DOS
             "/* INSURANCE NUMBER 2 DATA  */\r\n "
             "Coalesce(i2.INTERNAL_ID_JUAN, IF(c.Insurance_Carrier_2 IS NULL, NULL,\r\n "
             "CONCAT(\"OLD \",c.Insurance_Carrier_2)))  as HF_Payer_ID_S,\r\n "
@@ -246,6 +249,7 @@ class PostProcessView(View):
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.Zip_Code, p.Zip_Code)) as Insured_Zip_S,  \r\n "
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.Phone_1, p.Phone_1, "000-000-0000")) as Insured_Phone_S, \r\n "
             "/*Falta*/ \"\"  as Authorization_No_S,\r\n  \r\n "
+            ### ASEGURADORA TRES
             "/* INSURANCE NUMBER 3 DATA  */\r\n Coalesce(i3.INTERNAL_ID_JUAN, IF(c.Insurance_Carrier_3 IS NULL, NULL,\r\n "
             "CONCAT(\"OLD \",c.Insurance_Carrier_3))) as HF_Payer_ID_T, \r\n "
             "/*Falta*/ \"\" as Insurante_Type_T, \r\n "
@@ -263,6 +267,7 @@ class PostProcessView(View):
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.Zip_Code, p.Zip_Code)) as Insured_Zip_T, \r\n "
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.Phone_1, p.Phone_1, "000-000-0000")) as Insured_Phone_T,\r\n "
             "/*Falta*/ \"\"  as Authorization_No_T,\r\n  \r\n "
+            ### GUARANTOR
             "/* - Guarantor - */\r\n CASE WHEN c.Guarantor = c.Chart_Number THEN \"Self\" "
             "WHEN c.Guarantor = c.Insured_1 THEN \"PRIMARY INSURED\"  \r\n "
             "WHEN c.Guarantor = c.Insured_2 THEN \"SECONDARY INSURED\"  \r\n "
