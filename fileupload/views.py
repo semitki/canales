@@ -335,56 +335,56 @@ class PostProcessView(View):
             with conn:
                 cur = conn.cursor()
 
-                try:
+                #try:
 
 
-                    sqlPATCAS = ("CREATE TABLE "+TABLEPATCAS+" AS "
-                        "SELECT chart_number, MAX(case_number) AS case_number, "
-                        "COUNT(*) AS many "
-                        "FROM "+TABLECAS+
-                        " WHERE 1=1 ")
+                sqlPATCAS = ("CREATE TABLE "+TABLEPATCAS+" AS "
+                    "SELECT chart_number, MAX(case_number) AS case_number, "
+                    "COUNT(*) AS many "
+                    "FROM "+TABLECAS+
+                    " WHERE 1=1 ")
 
-                    sqlWhere = ("SELECT table_name "
-                        "FROM information_schema.tables "
-                        "WHERE table_name LIKE 'nwpatcas%'")
+                sqlWhere = ("SELECT table_name "
+                    "FROM information_schema.tables "
+                    "WHERE table_name LIKE 'nwpatcas%'")
 
-                    cur.execute(sqlWhere)
-                    row = cur.fetchone()
-                    sqlFilter = ""
-                    while row is not None:
-                      sqlFilter = sqlFilter +(" AND chart_number NOT IN ("
-                        "SELECT DISTINCT chart_number "
-                        "FROM "+ row[0]+")")
-                      row = cur.fetchone()
+                cur.execute(sqlWhere)
+                row = cur.fetchone()
+                sqlFilter = ""
+                while row is not None:
+                  sqlFilter = sqlFilter +(" AND chart_number NOT IN ("
+                    "SELECT DISTINCT chart_number "
+                    "FROM "+ row[0]+")")
+                  row = cur.fetchone()
 
-                    sqlPATCAS = sqlPATCAS + sqlFilter +" GROUP BY chart_number;"
-                    #salida['patcasSQL']=sqlPATCAS
-                    cur.execute(sqlPATCAS)
+                sqlPATCAS = sqlPATCAS + sqlFilter +" GROUP BY chart_number;"
+                #salida['patcasSQL']=sqlPATCAS
+                cur.execute(sqlPATCAS)
 
-                    sqlMAXID = "SELECT coalesce(max(id),0)+1 FROM explorer_query;"
-                    cur.execute(sqlMAXID)
-                    FULLID = int(cur.fetchone()[0])
-                    DIFFID = FULLID+1
-                    # INSERT FULL REPORT
-                    sqlReportFULL = sqlReportFULL.replace('@MAXID', str(FULLID))
-                    cur.execute(sqlReportFULL)
-                    #salida['reporteFULL']=sqlReportFULL
-                    # INSERT DIFF REPORT
-                    sqlReportDIFF = sqlReportDIFF.replace('@MAXID', str(DIFFID))
-                    cur.execute(sqlReportDIFF)
-                    #salida['reporteDIFF']=sqlReportDIFF
-                    salida['patcas']=TABLEPATCAS
+                sqlMAXID = "SELECT coalesce(max(id),0)+1 FROM explorer_query;"
+                cur.execute(sqlMAXID)
+                FULLID = int(cur.fetchone()[0])
+                DIFFID = FULLID+1
+                # INSERT FULL REPORT
+                sqlReportFULL = sqlReportFULL.replace('@MAXID', str(FULLID))
+                cur.execute(sqlReportFULL)
+                #salida['reporteFULL']=sqlReportFULL
+                # INSERT DIFF REPORT
+                sqlReportDIFF = sqlReportDIFF.replace('@MAXID', str(DIFFID))
+                cur.execute(sqlReportDIFF)
+                #salida['reporteDIFF']=sqlReportDIFF
+                salida['patcas']=TABLEPATCAS
 
-                    for key in files:
-                        if key=="cas":
-                            salida['cas']['reportFULLName']=REPORTFULL
-                            salida['cas']['reportFULLLink']="explorer/"+str(FULLID)
-                        elif key=="pat":
-                            salida['pat']['reportDIFFName']=REPORTDIFF
-                            salida['pat']['reportDIFFLink']="explorer/"+str(DIFFID)
-                    
-                except Exception as e:
-                    salida = {'error':e}
+                for key in files:
+                    if key=="cas":
+                        salida['cas']['reportFULLName']=REPORTFULL
+                        salida['cas']['reportFULLLink']="explorer/"+str(FULLID)
+                    elif key=="pat":
+                        salida['pat']['reportDIFFName']=REPORTDIFF
+                        salida['pat']['reportDIFFLink']="explorer/"+str(DIFFID)
+                
+                #except Exception as e:
+                #    salida = {'error':e}
             return JsonResponse(salida,safe=False)
         else:
             return JsonResponse({'error':'no se recibieron todos los archivos'},safe=False)
