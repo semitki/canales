@@ -318,18 +318,18 @@ class PostProcessView(View):
                                 passwd=database['PASSWORD'],
                                 db=database['NAME'])
 
-            sqlReport = sqlReport.replace('@TABLEPAT', TABLEPAT)
-            sqlReport = sqlReport.replace('@TABLECAS', TABLECAS)
-
-
             ## LETS CREATE TWO REPORT
             # ONE FOR SHOWING ALL RECORDS
             # ANOTHER ONE SHOWING ONLY DIFFERENCES BETWEEN PREVIOUS UPLOADS AND CURRENT ONE
             sqlReportFULL = sqlReport.replace('@TABLEPATCAS', "nwpatcas")
             sqlReportFULL = sqlReportFULL.replace('@REPORTNAME', REPORTFULL)
-            
+            sqlReportFULL = sqlReportFULL.replace('@TABLEPAT', TABLEPAT)
+            sqlReportFULL = sqlReportFULL.replace('@TABLECAS', TABLECAS)
+
             sqlReportDIFF = sqlReport.replace('@TABLEPATCAS', TABLEPATCAS)
             sqlReportDIFF = sqlReportDIFF.replace('@REPORTNAME', REPORTDIFF)
+            sqlReportDIFF = sqlReportDIFF.replace('@TABLEPAT', TABLEPAT)
+            sqlReportDIFF = sqlReportDIFF.replace('@TABLECAS', TABLECAS)
 
             with conn:
                 cur = conn.cursor()
@@ -374,9 +374,9 @@ class PostProcessView(View):
                     #salida['reporteDIFF']=sqlReportDIFF
 
                     salida['patcas']=TABLEPATCAS
-                    salida['reportFULL']=REPORTFULL
+                    salida['reportFULLName']=REPORTFULL
                     salida['reportFULLLink']="explorer/"+str(FULLID)
-                    salida['reportDIFF']=REPORTDIFF
+                    salida['reportDIFFName']=REPORTDIFF
                     salida['reportDIFFLink']="explorer/"+str(DIFFID)
                 except Exception as e:
                     salida = {'error':e}
