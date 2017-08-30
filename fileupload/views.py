@@ -247,7 +247,7 @@ class PostProcessView(View):
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.City, p.City)) as Insured_City_S,  \r\n "
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.State,p.State)) as Insured_State_S,  \r\n "
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.Zip_Code, p.Zip_Code)) as Insured_Zip_S,  \r\n "
-            "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.Phone_1, p.Phone_1, "000-000-0000")) as Insured_Phone_S, \r\n "
+            "IF(c.Insured_2 IS NULL, NULL, COALESCE(p2.Phone_1, p.Phone_1, \"000-000-0000\")) as Insured_Phone_S, \r\n "
             "/*Falta*/ \"\"  as Authorization_No_S,\r\n  \r\n "
             ### ASEGURADORA TRES
             "/* INSURANCE NUMBER 3 DATA  */\r\n Coalesce(i3.INTERNAL_ID_JUAN, IF(c.Insurance_Carrier_3 IS NULL, NULL,\r\n "
@@ -265,7 +265,7 @@ class PostProcessView(View):
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.City, p.City)) as Insured_City_T,  \r\n "
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.State,p.State)) as Insured_State_T, \r\n "
             "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.Zip_Code, p.Zip_Code)) as Insured_Zip_T, \r\n "
-            "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.Phone_1, p.Phone_1, "000-000-0000")) as Insured_Phone_T,\r\n "
+            "IF(c.Insured_2 IS NULL, NULL, COALESCE(p3.Phone_1, p.Phone_1, \"000-000-0000\")) as Insured_Phone_T,\r\n "
             "/*Falta*/ \"\"  as Authorization_No_T,\r\n  \r\n "
             ### GUARANTOR
             "/* - Guarantor - */\r\n CASE WHEN c.Guarantor = c.Chart_Number THEN \"Self\" "
