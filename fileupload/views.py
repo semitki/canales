@@ -204,9 +204,9 @@ class PostProcessView(View):
             "/* Req */coalesce(p.Phone_1, p.Contact_Phone_1, \"000-000-0000\") as Home_Phone, \r\n "
             "p.Work_Phone, \"\" as Cell_Phone, p.EMail, \r\n "
             "CASE p.Race WHEN \"W\" THEN \"White\" WHEN \"I\" THEN \"American Indian or Alaska Native\" \r\n "
-            "WHEN \"E\" THEN \"Patient Declined\" ELSE \"Patient Declined\" END AS Race,  \r\n "
+            "WHEN \"E\" THEN \"Patient Declined\" ELSE \"Hispanic or Latino\" END AS Race,  \r\n "
             "CASE p.Ethnicity WHEN \"H\" THEN \"Hispanic or Latino\" \r\n "
-            "ELSE \"Patient Declined\" END AS Ethnicity,\r\n \r\n "
+            "ELSE \"Hispanic or Latino\" END AS Ethnicity,\r\n \r\n "
             ### ASEGURADORA UNO
             "/* INSURANCE NUMBER 1 DATA  */\r\n "
             "Coalesce(i1.INTERNAL_ID_JUAN, IF(c.Insurance_Carrier_1 IS NULL, NULL,\r\n "
