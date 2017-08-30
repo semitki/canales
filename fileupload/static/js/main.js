@@ -118,12 +118,12 @@ let dominator = {
     $.get('/postproc/',
       data,
       function(response) {
-        $('#'+response.cas).append(
+        $('#cas').append(
           '<a href="/' + response.cas.reportFULLLink + '">'
           + response.cas.reportFULLName + '</a>'
         );
 
-        $('#'+response.pat).append(
+        $('#pat').append(
           '<a href="/' + response.pat.reportDIFFLink + '">'
           + response.pat.reportDIFFName + '</a>'
         );
