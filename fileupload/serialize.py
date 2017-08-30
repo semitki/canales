@@ -28,7 +28,7 @@ def serialize(instance, file_attr='file'):
     return {
         'resource_id': instance.pk,
         'url': obj.url,
-        'file_type': obj.file_type,
+        'file_type': instance.file_type,
         'name': order_name(obj.name),
         'type': mimetypes.guess_type(obj.path)[0] or 'image/png',
         'thumbnailUrl': obj.url,
