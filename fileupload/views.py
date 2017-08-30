@@ -377,11 +377,11 @@ class PostProcessView(View):
 
                 for key in files:
                     if key=="cas":
-                        salida['cas']['reportFULLName']=REPORTFULL
-                        salida['cas']['reportFULLLink']="explorer/"+str(FULLID)
+                        salida['reportFULLName']=REPORTFULL
+                        salida['reportFULLLink']="explorer/"+str(FULLID)
                     elif key=="pat":
-                        salida['pat']['reportDIFFName']=REPORTDIFF
-                        salida['pat']['reportDIFFLink']="explorer/"+str(DIFFID)
+                        salida['reportDIFFName']=REPORTDIFF
+                        salida['reportDIFFLink']="explorer/"+str(DIFFID)
                 
                 #except Exception as e:
                 #    salida = {'error':e}
