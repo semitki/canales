@@ -339,7 +339,7 @@ class PostProcessView(View):
 
 
                 sqlPATCAS = ("CREATE TABLE "+TABLEPATCAS+" AS "
-                    "SELECT chart_number, MAX(case_number) AS case_number, "
+                    "SELECT chart_number, case_number, max(last_visit_date) last_visit_date "
                     "COUNT(*) AS many "
                     "FROM "+TABLECAS+
                     " WHERE 1=1 ")
