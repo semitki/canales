@@ -119,13 +119,13 @@ let dominator = {
       data,
       function(response) {
         $('#cas').append(
-          '<a href="/' + response.cas.reportFULLLink + '">'
-          + response.cas.reportFULLName + '</a>'
+          '<a href="/' + response.reportFULLLink + '">'
+          + response.reportFULLName + '</a>'
         );
 
         $('#pat').append(
-          '<a href="/' + response.pat.reportDIFFLink + '">'
-          + response.pat.reportDIFFName + '</a>'
+          '<a href="/' + response.reportDIFFLink + '">'
+          + response.reportDIFFName + '</a>'
         );
         
         alert('Reports generated succesfully');
