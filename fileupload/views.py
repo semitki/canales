@@ -117,6 +117,7 @@ class ProcessCsvView(View):
                     # and keep checking for Completed asynchronously
                     response = self._monitor(file_id)
                     if response['Status'] == 'Complete':
+                        response['FileName'] == csv_file
                         sqlFile = requests.get(response['ResultUrl'])
                         if sqlFile.status_code is 200:
                             queries = sqlFile.content
@@ -372,12 +373,16 @@ class PostProcessView(View):
                     sqlReportDIFF = sqlReportDIFF.replace('@MAXID', str(DIFFID))
                     cur.execute(sqlReportDIFF)
                     #salida['reporteDIFF']=sqlReportDIFF
-
                     salida['patcas']=TABLEPATCAS
-                    salida['reportFULLName']=REPORTFULL
-                    salida['reportFULLLink']="explorer/"+str(FULLID)
-                    salida['reportDIFFName']=REPORTDIFF
-                    salida['reportDIFFLink']="explorer/"+str(DIFFID)
+
+                    for key in files:
+                        if key=="cas":
+                            salida[key]['reportFULLName']=REPORTFULL
+                            salida[key]['reportFULLLink']="explorer/"+str(FULLID)
+                        elif key=="pat":
+                            salida[key]['reportDIFFName']=REPORTDIFF
+                            salida[key]['reportDIFFLink']="explorer/"+str(DIFFID)
+                    
                 except Exception as e:
                     salida = {'error':e}
             return JsonResponse(salida,safe=False)
