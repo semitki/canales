@@ -188,9 +188,10 @@ class PostProcessView(View):
                 time.time()).strftime('%Y%m%d%H%M%S')
         DATEFORMATTED=datetime.datetime.fromtimestamp(
                 time.time()).strftime('%B %d, %Y at %H:%M:%S')
-        REPORTNAME = "Patient_Record_Upload - "+DATEFORMATTED
+        REPORTDIFF = "DIFFERENCES - "+DATEFORMATTED
+        REPORTFULL = "FULL REPORT - "+DATEFORMATTED
         sqlReport = ("INSERT INTO `explorer_query` "
-            "VALUES (@MAXID,'"+REPORTNAME+"', "
+            "VALUES (@MAXID,'@REPORTNAME', "
             "'SELECT\r\n  pc.case_number,\r\n /* Req */ p.First_Name, p.Middle_Name, \r\n "
             "/* Req */p.Last_Name, DATE_Format(p.Date_of_Birth, \"%m/%d/%Y\") as DOB,\r\n "
             "/* Req */CASE p.Sex WHEN \"Female\" THEN \"F\" WHEN \"Male\" THEN \"M\" ELSE \"U\" END AS Gender,\r\n "
@@ -317,10 +318,18 @@ class PostProcessView(View):
                                 passwd=database['PASSWORD'],
                                 db=database['NAME'])
 
-            sqlReport = sqlReport.replace('@TABLEPATCAS', TABLEPATCAS)
             sqlReport = sqlReport.replace('@TABLEPAT', TABLEPAT)
             sqlReport = sqlReport.replace('@TABLECAS', TABLECAS)
 
+
+            ## LETS CREATE TWO REPORT
+            # ONE FOR SHOWING ALL RECORDS
+            # ANOTHER ONE SHOWING ONLY DIFFERENCES BETWEEN PREVIOUS UPLOADS AND CURRENT ONE
+            sqlReportFULL = sqlReport.replace('@TABLEPATCAS', "nwpatcas")
+            sqlReportFULL = sqlReportFULL.replace('@REPORTNAME', REPORTFULL)
+            
+            sqlReportDIFF = sqlReport.replace('@TABLEPATCAS', TABLEPATCAS)
+            sqlReportDIFF = sqlReportDIFF.replace('@REPORTNAME', REPORTDIFF)
 
             with conn:
                 cur = conn.cursor()
@@ -353,15 +362,22 @@ class PostProcessView(View):
 
                     sqlMAXID = "SELECT coalesce(max(id),0)+1 FROM explorer_query;"
                     cur.execute(sqlMAXID)
-                    MAXID = int(cur.fetchone()[0])
-
-                    sqlReport = sqlReport.replace('@MAXID', str(MAXID))
-                    cur.execute(sqlReport)
-                    #salida['reporte']=sqlReport
+                    FULLID = int(cur.fetchone()[0])
+                    DIFFID = FULLID+1
+                    # INSERT FULL REPORT
+                    sqlReportFULL = sqlReportFULL.replace('@MAXID', str(FULLID))
+                    cur.execute(sqlReportFULL)
+                    #salida['reporteFULL']=sqlReportFULL
+                    # INSERT DIFF REPORT
+                    sqlReportDIFF = sqlReportDIFF.replace('@MAXID', str(DIFFID))
+                    cur.execute(sqlReportDIFF)
+                    #salida['reporteDIFF']=sqlReportDIFF
 
                     salida['patcas']=TABLEPATCAS
-                    salida['reportName']=REPORTNAME
-                    salida['reportLink']="explorer/"+str(MAXID)
+                    salida['reportFULL']=REPORTFULL
+                    salida['reportFULLLink']="explorer/"+str(FULLID)
+                    salida['reportDIFF']=REPORTDIFF
+                    salida['reportDIFFLink']="explorer/"+str(DIFFID)
                 except Exception as e:
                     salida = {'error':e}
             return JsonResponse(salida,safe=False)

@@ -117,9 +117,13 @@ let dominator = {
     $.get('/postproc/',
       data,
       function(response) {
-        $('#finale').append(
-          '<a href="/' + response.reportLink + '">'
-          + response.reportName + '</a>'
+        $('#finale0').append(
+          '<a href="/' + response.reportFULLLink + '">'
+          + response.reportFULLName + '</a>'
+        );
+        $('#finale1').append(
+          '<a href="/' + response.reportDIFFLink + '">'
+          + response.reportDIFFName + '</a>'
         );
         alert('Report generated succesfully');
         console.log(response);
