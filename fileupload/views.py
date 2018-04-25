@@ -13,6 +13,7 @@ from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
 from subprocess import Popen, PIPE
+import canales as can
 
 logger = logging.getLogger(__name__)
 database = settings.DATABASES['default']
@@ -61,13 +62,14 @@ class PictureListView(ListView):
 class ProcessCsvView(View):
 
     def __init__(self):
-        self.sqlizer_url = 'https://sqlizer.io/api/files/'
-        self.sqlizer_headers = {'Authorization':
-                'Bearer lZicTcPoMhNGbzFmd_S_xox0G2RZ5SST026wUnKstQ88TTvZWa7eFbm3j1QUkelOm-4plUPZWGkhZL7I3ZVzkQ=='}
-        self.status = ['Uploaded',
-                'Analysing',
-                'Processing',
-                'Failed']
+        #self.sqlizer_url = 'https://sqlizer.io/api/files/'
+        #self.sqlizer_headers = {'Authorization':
+        #        'Bearer lZicTcPoMhNGbzFmd_S_xox0G2RZ5SST026wUnKstQ88TTvZWa7eFbm3j1QUkelOm-4plUPZWGkhZL7I3ZVzkQ=='}
+        #self.status = ['Uploaded',
+        #        'Analysing',
+        #        'Processing',
+        #        'Failed']
+        pass
 
     def _monitor(self, file_id, response = None):
         r = requests.get(self.sqlizer_url + file_id + '/',
@@ -95,80 +97,81 @@ class ProcessCsvView(View):
             'TableName': tableName,
             'FileHasHeaders': True
             }
+        can.process(can.read_csv(csv.file), tableName)
         # sqlizer step 1
-        r = requests.post(self.sqlizer_url, headers = self.sqlizer_headers,
-                data = data)
-        if r.status_code is 200:
-            response = json.loads(r.text)
-            file_id = response['ID']
-            csv_file = {'file': csv.file}
-            # sqlizer step 2
-            u = requests.post(self.sqlizer_url + file_id + '/data/',
-                    headers = self.sqlizer_headers,
-                    files = csv_file)
-            if u.status_code is 200:
-                # sqlizer step 3
-                p = requests.put(self.sqlizer_url + file_id + '/',
-                        headers = self.sqlizer_headers,
-                        data = {'Status': 'Uploaded'})
-                if p.status_code is 200:
-                    # sqlizer step 4, check until 'Complete' is returned
-                    # TODO maybe _monitor should return status and percentage completed
-                    # and keep checking for Completed asynchronously
-                    response = self._monitor(file_id)
-                    if response['Status'] == 'Complete':
-                        response['FileName'] == csv_file
-                        sqlFile = requests.get(response['ResultUrl'])
-                        if sqlFile.status_code is 200:
-                            queries = sqlFile.content
-                            #Execute queries
-                            #Add ); because there are fields with ; inside
-                            result = re.findall(regex, queries, re.MULTILINE)
-                            #sqlCommands = queries.split(';')
-                            conn = mdb.connect(host=database['HOST'],
-                                    user=database['USER'],
-                                    passwd=database['PASSWORD'],
-                                    db=database['NAME'])
-                            with conn:
-                                cur = conn.cursor()
-                                for command in result:
-                                    sql=""
-                                    for query in command:
-                                        if query.strip() != "":
-                                            sql=sql+query
-                                    try:
-                                        # Replace some character not acceptable 
-                                        #  '\'    = '' 
-                                        # 'None'  = ''
-                                        # 'True'  = 'yes'
-                                        #  'False'= 'no'
-                                        sql = sql.replace("\\","")
-                                        sql = sql.replace("None","")
-                                        sql = sql.replace("True","yes")
-                                        sql = sql.replace("False","no")
-                                        cur.execute(sql+");")
-                                    except Exception as e:
-                                        response = {'error':e}
-
-                            #Save file to disk
-                            fileName = '/tmp/' + tableName+".sql"
-                            with open(fileName, "w") as text_file:
-                                text_file.write(queries)
-                            text_file.close()
-                        else:
-                            response = {'error':
-                                    'Error saving processed SQL file'}
-                    else:
-                        response = {'error': 'Error processing SQL file'}
-                else:
-                    response = {'error':
-                            'Error trying to finalize file upload to sqlizer'}
-            else:
-                response = {'error':
-                        'Error trying to upload file to sqlizer'}
-        else:
-            response = {'error':
-                    'Error trying to initate file conversion on sqlizer'}
+#        r = requests.post(self.sqlizer_url, headers = self.sqlizer_headers,
+#                data = data)
+#        if r.status_code is 200:
+#            response = json.loads(r.text)
+#            file_id = response['ID']
+#            csv_file = {'file': csv.file}
+#            # sqlizer step 2
+#            u = requests.post(self.sqlizer_url + file_id + '/data/',
+#                    headers = self.sqlizer_headers,
+#                    files = csv_file)
+#            if u.status_code is 200:
+#                # sqlizer step 3
+#                p = requests.put(self.sqlizer_url + file_id + '/',
+#                        headers = self.sqlizer_headers,
+#                        data = {'Status': 'Uploaded'})
+#                if p.status_code is 200:
+#                    # sqlizer step 4, check until 'Complete' is returned
+#                    # TODO maybe _monitor should return status and percentage completed
+#                    # and keep checking for Completed asynchronously
+#                    response = self._monitor(file_id)
+#                    if response['Status'] == 'Complete':
+#                        response['FileName'] == csv_file
+#                        sqlFile = requests.get(response['ResultUrl'])
+#                        if sqlFile.status_code is 200:
+#                            queries = sqlFile.content
+#                            #Execute queries
+#                            #Add ); because there are fields with ; inside
+#                            result = re.findall(regex, queries, re.MULTILINE)
+#                            #sqlCommands = queries.split(';')
+#                            conn = mdb.connect(host=database['HOST'],
+#                                    user=database['USER'],
+#                                    passwd=database['PASSWORD'],
+#                                    db=database['NAME'])
+#                            with conn:
+#                                cur = conn.cursor()
+#                                for command in result:
+#                                    sql=""
+#                                    for query in command:
+#                                        if query.strip() != "":
+#                                            sql=sql+query
+#                                    try:
+#                                        # Replace some character not acceptable
+#                                        #  '\'    = ''
+#                                        # 'None'  = ''
+#                                        # 'True'  = 'yes'
+#                                        #  'False'= 'no'
+#                                        sql = sql.replace("\\","")
+#                                        sql = sql.replace("None","")
+#                                        sql = sql.replace("True","yes")
+#                                        sql = sql.replace("False","no")
+#                                        cur.execute(sql+");")
+#                                    except Exception as e:
+#                                        response = {'error':e}
+#
+#                            #Save file to disk
+#                            fileName = '/tmp/' + tableName+".sql"
+#                            with open(fileName, "w") as text_file:
+#                                text_file.write(queries)
+#                            text_file.close()
+#                        else:
+#                            response = {'error':
+#                                    'Error saving processed SQL file'}
+#                    else:
+#                        response = {'error': 'Error processing SQL file'}
+#                else:
+#                    response = {'error':
+#                            'Error trying to finalize file upload to sqlizer'}
+#            else:
+#                response = {'error':
+#                        'Error trying to upload file to sqlizer'}
+#        else:
+#            response = {'error':
+#                    'Error trying to initate file conversion on sqlizer'}
         #return HttpResponse(response)
         return JsonResponse(response, safe=False)
 
@@ -200,7 +203,7 @@ class PostProcessView(View):
             "/* Req */p.City, p.State, p.Zip_Code as ZIP, \r\n "
             "IF(c.Marital_Status IS NULL, \"Single\", CASE c.Marital_Status WHEN \"Unknown\" THEN \"Single\" \r\n "
             "WHEN \"\" THEN \"Single\" ELSE c.Marital_Status END) AS Marital_Status, \r\n "
-            "CASE p.Employment_Status WHEN \"Full time\" THEN \"Employed\" \r\n " 
+            "CASE p.Employment_Status WHEN \"Full time\" THEN \"Employed\" \r\n "
             "WHEN \"Not employed\" THEN \"Unemployed\" ELSE \"Other\" END AS Employment_Status, \r\n "
             "p.Chart_Number as Chart_No, p.Signature_on_File, \r\n "
             "/* Req */coalesce(p.Phone_1, p.Contact_Phone_1, \"000-000-0000\") as Home_Phone, \r\n "
@@ -294,8 +297,8 @@ class PostProcessView(View):
             "LEFT JOIN @TABLEPAT p2 on p2.Chart_Number = c.Insured_2\r\n                     "
             "LEFT JOIN @TABLEPAT p3 on p3.Chart_Number = c.Insured_3\r\n                     "
             "LEFT JOIN nwins i1 on i1.Code = c.Insurance_Carrier_1\r\n                     "
-            "LEFT JOIN nwins i2 on i2.Code = c.Insurance_Carrier_2\r\n                     " 
-            "LEFT JOIN nwins i3 on i3.Code = c.Insurance_Carrier_3\r\n                     " 
+            "LEFT JOIN nwins i2 on i2.Code = c.Insurance_Carrier_2\r\n                     "
+            "LEFT JOIN nwins i3 on i3.Code = c.Insurance_Carrier_3\r\n                     "
             "LEFT JOIN @TABLEPAT g on g.Chart_Number = c.Guarantor)\r\n                     "
             "ON c.Chart_Number = pc.chart_number AND c.Case_Number = pc.case_number )\r\n                     "
             "ON pc.chart_number = p.Chart_Number\r\n"
@@ -382,7 +385,7 @@ class PostProcessView(View):
                     elif key=="pat":
                         salida['reportDIFFName']=REPORTDIFF
                         salida['reportDIFFLink']="explorer/"+str(DIFFID)
-                
+
                 #except Exception as e:
                 #    salida = {'error':e}
             return JsonResponse(salida,safe=False)

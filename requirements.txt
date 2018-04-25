@@ -1,13 +1,18 @@
 Django==1.11.4
 MySQL-python==1.2.5
 Pillow==4.2.1
+PyMySQL==0.8.0
+SQLAlchemy==1.2.7
 argparse==1.2.1
 certifi==2017.7.27.1
 chardet==3.0.4
--e git+https://github.com/groveco/django-sql-explorer.git@60c60b264ff2b7f7acf9acaab423bb22e8cb61fb#egg=django-sql-explorer
+-e git+https://github.com/groveco/django-sql-explorer.git@60c60b264ff2b7f7acf9acaab423bb22e8cb61fb#egg=django_sql_explorer-dev
 idna==2.5
 mysql==0.0.1
+numpy==1.14.2
 olefile==0.44
+pandas==0.22.0
+python-dateutil==2.7.2
 pytz==2017.2
 requests==2.18.3
 six==1.10.0
