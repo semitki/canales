@@ -3,13 +3,15 @@ import re
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine
-
+from sqlalchemy.orm import sessionmaker
 #Location = r'./canales/media/pictures/nwpat_EErd9Nc.csv'
 #df = pd.read_csv(Location)
 dwot = re.compile('\d{2,2}/\d{2,2}/\d{4,4}')
 dwt = re.compile('\d{2,2}/\d{2,2}/\d{4,4} \d{1,2}:\d{2,2}:\d{2,2} (AM|PM)')
-engine = create_engine('mysql+mysqldb://root:123asdqwe@localhost/canales')
-
+engine = create_engine('mysql+mysqldb://root:123asdqwe@127.0.0.1:3306/canalesdb')
+Session = sessionmaker()
+Session.configure(bind=engine)
+session = Session()
 
 def read_csv(Location):
     return pd.read_csv(Location)
@@ -43,7 +45,6 @@ def process(df, t_name):
             t_cols.append((column, 'BOOL'))
 
     cont = 0
-    #t_name = Location.split('/')[len(Location.split('/')) - 1].split('.')[0]
     create_table = ("CREATE TABLE %s (\n\r" % t_name)
     for c in t_cols:
         c_name = c[0].replace(' ', '_')
@@ -59,6 +60,7 @@ def process(df, t_name):
     sql_file.write(create_table)
     sql_file.close()
     # Store in DB
+    session.execute(create_table)
     with engine.connect() as conn, conn.begin():
         df.to_sql(
             name=t_name,
