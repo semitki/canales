@@ -1,23 +1,22 @@
 # encoding: utf-8
-import requests
 import MySQLdb as mdb
 import time
 import datetime
 import logging
 import json
-import re
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
 from django.views.generic import CreateView, DeleteView, ListView, View
+from django.conf import settings
 from .models import Picture
 from .response import JSONResponse, response_mimetype
 from .serialize import serialize
-from subprocess import Popen, PIPE
 import canales as can
 
 logger = logging.getLogger(__name__)
 database = settings.DATABASES['default']
 regex = r'(^[^;]+)(.*)(?:\);)(.*$)?'
+
 
 class PictureCreateView(CreateView):
     model = Picture
@@ -34,7 +33,7 @@ class PictureCreateView(CreateView):
     def form_invalid(self, form):
         data = json.dumps(form.errors)
         return HttpResponse(content=data, status=400,
-                content_type='application/json')
+                            content_type='application/json')
 
 
 class PictureDeleteView(DeleteView):
@@ -52,7 +51,7 @@ class PictureListView(ListView):
     model = Picture
 
     def render_to_response(self, context, **response_kwargs):
-        files = [ serialize(p) for p in self.get_queryset() ]
+        files = [serialize(p) for p in self.get_queryset()]
         data = {'files': files}
         response = JSONResponse(data, mimetype=response_mimetype(self.request))
         response['Content-Disposition'] = 'inline; filename=files.json'
@@ -61,118 +60,14 @@ class PictureListView(ListView):
 
 class ProcessCsvView(View):
 
-    def __init__(self):
-        #self.sqlizer_url = 'https://sqlizer.io/api/files/'
-        #self.sqlizer_headers = {'Authorization':
-        #        'Bearer lZicTcPoMhNGbzFmd_S_xox0G2RZ5SST026wUnKstQ88TTvZWa7eFbm3j1QUkelOm-4plUPZWGkhZL7I3ZVzkQ=='}
-        #self.status = ['Uploaded',
-        #        'Analysing',
-        #        'Processing',
-        #        'Failed']
-        pass
-
-    def _monitor(self, file_id, response = None):
-        r = requests.get(self.sqlizer_url + file_id + '/',
-                headers = self.sqlizer_headers)
-        if r.status_code is 200:
-            if (json.loads(r.text)['Status'] not in self.status and
-                    response != None):
-                return json.loads(r.text)
-            else:
-                # TODO randomize time for re-check
-                return self._monitor(file_id = file_id,
-                        response = json.loads(r.text)['Status'])
-        else:
-            return {'error':
-                    'Error monitoring file in sqlizer'}
-
     def get(self, request, *args, **kwargs):
         resource_id = request.path.split('/')[2]
-        csv = Picture.objects.get(pk = resource_id)
+        csv = Picture.objects.get(pk=resource_id)
         ts = csv.timestamp.strftime("%Y%m%d%H%M%S")
         tableName = 'nw' + csv.file_type + ts
-        data = {'DatabaseType': 'MySQL',
-            'FileType': 'csv',
-            'FileName': csv.slug,
-            'TableName': tableName,
-            'FileHasHeaders': True
-            }
-        can.process(can.read_csv(csv.file), tableName)
-        # sqlizer step 1
-#        r = requests.post(self.sqlizer_url, headers = self.sqlizer_headers,
-#                data = data)
-#        if r.status_code is 200:
-#            response = json.loads(r.text)
-#            file_id = response['ID']
-#            csv_file = {'file': csv.file}
-#            # sqlizer step 2
-#            u = requests.post(self.sqlizer_url + file_id + '/data/',
-#                    headers = self.sqlizer_headers,
-#                    files = csv_file)
-#            if u.status_code is 200:
-#                # sqlizer step 3
-#                p = requests.put(self.sqlizer_url + file_id + '/',
-#                        headers = self.sqlizer_headers,
-#                        data = {'Status': 'Uploaded'})
-#                if p.status_code is 200:
-#                    # sqlizer step 4, check until 'Complete' is returned
-#                    # TODO maybe _monitor should return status and percentage completed
-#                    # and keep checking for Completed asynchronously
-#                    response = self._monitor(file_id)
-#                    if response['Status'] == 'Complete':
-#                        response['FileName'] == csv_file
-#                        sqlFile = requests.get(response['ResultUrl'])
-#                        if sqlFile.status_code is 200:
-#                            queries = sqlFile.content
-#                            #Execute queries
-#                            #Add ); because there are fields with ; inside
-#                            result = re.findall(regex, queries, re.MULTILINE)
-#                            #sqlCommands = queries.split(';')
-#                            conn = mdb.connect(host=database['HOST'],
-#                                    user=database['USER'],
-#                                    passwd=database['PASSWORD'],
-#                                    db=database['NAME'])
-#                            with conn:
-#                                cur = conn.cursor()
-#                                for command in result:
-#                                    sql=""
-#                                    for query in command:
-#                                        if query.strip() != "":
-#                                            sql=sql+query
-#                                    try:
-#                                        # Replace some character not acceptable
-#                                        #  '\'    = ''
-#                                        # 'None'  = ''
-#                                        # 'True'  = 'yes'
-#                                        #  'False'= 'no'
-#                                        sql = sql.replace("\\","")
-#                                        sql = sql.replace("None","")
-#                                        sql = sql.replace("True","yes")
-#                                        sql = sql.replace("False","no")
-#                                        cur.execute(sql+");")
-#                                    except Exception as e:
-#                                        response = {'error':e}
-#
-#                            #Save file to disk
-#                            fileName = '/tmp/' + tableName+".sql"
-#                            with open(fileName, "w") as text_file:
-#                                text_file.write(queries)
-#                            text_file.close()
-#                        else:
-#                            response = {'error':
-#                                    'Error saving processed SQL file'}
-#                    else:
-#                        response = {'error': 'Error processing SQL file'}
-#                else:
-#                    response = {'error':
-#                            'Error trying to finalize file upload to sqlizer'}
-#            else:
-#                response = {'error':
-#                        'Error trying to upload file to sqlizer'}
-#        else:
-#            response = {'error':
-#                    'Error trying to initate file conversion on sqlizer'}
-        #return HttpResponse(response)
+        #df = can.read_csv(csv.file)
+        response = can.process(settings.MEDIA_ROOT + '/' + csv.__str__(),
+                               tableName)
         return JsonResponse(response, safe=False)
 
 
@@ -183,14 +78,14 @@ class PostProcessView(View):
 
     def get(self, request, *args, **kwargs):
 
-        salida={}
+        salida = {}
         files = request.GET.copy()
-        TABLECAS=""
-        TABLEPAT=""
-        TABLEPATCAS=""
+        TABLECAS = ""
+        TABLEPAT = ""
+        TABLEPATCAS = ""
         TS = datetime.datetime.fromtimestamp(
                 time.time()).strftime('%Y%m%d%H%M%S')
-        DATEFORMATTED=datetime.datetime.fromtimestamp(
+        DATEFORMATTED = datetime.datetime.fromtimestamp(
                 time.time()).strftime('%B %d, %Y at %H:%M:%S')
         REPORTDIFF = "DIFFERENCES - "+DATEFORMATTED
         REPORTFULL = "FULL REPORT - "+DATEFORMATTED
@@ -410,5 +305,3 @@ class AngularVersionCreateView(PictureCreateView):
 
 class jQueryVersionCreateView(PictureCreateView):
     template_name_suffix = '_jquery_form'
-
-
