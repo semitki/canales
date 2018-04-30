@@ -27,7 +27,7 @@ def str_or_date(val):
         else:
             return ('VARCHAR')
     else:
-        return 'VARCHAR(1200) CHARACTER SET utf8'
+        return 'VARCHAR(1200) CHARACTER SET utf8 DEFAULT NULL'
 
 
 def values_to_sql(df, c_def):
@@ -47,16 +47,16 @@ def process(csv_file, t_name):
                 c_type = df[column].apply(lambda x: str_or_date(x))[0]
                 if c_type == 'VARCHAR':
                     c_len = df[column].apply(lambda x: len(str(x))).max()
-                    c_def = ("%s(%i) CHARACTER SET utf8" % (c_type, c_len))
+                    c_def = ("%s(%i) CHARACTER SET utf8 DEFAULT NULL" % (c_type, c_len))
                 else:
                     c_def = c_type
                 t_cols.append((column, c_def))
             elif dt == np.int64:
-                t_cols.append((column, 'INT'))
+                t_cols.append((column, 'INT DEFAULT NULL'))
             elif dt == float or np.float64:
-                t_cols.append((column, 'FLOAT'))
+                t_cols.append((column, 'FLOAT DEFAULT NULL'))
             elif dt == np.bool_:
-                t_cols.append((column, 'BOOL'))
+                t_cols.append((column, 'BOOL DEFAULT NULL'))
 
         ## Build the CREATE TABLE statement
         cont = 0
@@ -71,15 +71,15 @@ def process(csv_file, t_name):
                 create_table += '\t`'+c_name+'` '+c[1]+'\n\r'
                 insert_to += '`'+c_name+'`'
             cont+=1
-        create_table += ');'
+        create_table += ');\r\n'
         insert_to += ')'
 
         # Dump SQL create table
-        #sql_file = open('/tmp/' + t_name + '.sql', 'w')
-        #sql_file.write(create_table)
-        #sql_file.close()
+        sql_file = open('/tmp/' + t_name + '.sql', 'w')
+        sql_file.write(create_table)
+        sql_file.close()
         # Store in DB
-        session.execute(create_table)
+        #session.execute(create_table)
 
         ## Build INSERT statements
         inserts = []
@@ -89,13 +89,21 @@ def process(csv_file, t_name):
                                     skipinitialspace=True)
             headers = next(csvfile)
             for row in linereader:
+                v_line = ','.join(row).replace(',,',',NULL,').replace("'",' ').replace('"',"'").replace("''", 'NULL').replace('\\','')
+                if t_name.find('nwcas') == 0 and len(v_line[:-1].split(',')) < t_cols:
+                    v_line += 'NULL'
+
                 inserts.append('INSERT INTO ' + str(t_name) +
-                               ' VALUES (' + ','.join(row).replace('"',"'").replace("''", 'NULL') + ');')
+                               ' VALUES (' + v_line + ');\r\n')
 
+        #print(inserts[0].replace(',,',',NULL,').replace('NULL,);', 'NULL);'))
+        #session.execute(inserts[0].replace(',,',',NULL,').replace('NULL,);', 'NULL);'))
+
+        sql_file = open('/tmp/' + t_name + '.sql', 'a')
         for insert in inserts:
-            session.execute(text(insert))
-
-        #print(inserts[0])
+            sql_file.write(insert.replace('NULL,);', 'NULL);'))
+        sql_file.close()
+        print(inserts[0])
         return True
     except Exception:
         print(traceback.format_exc())
