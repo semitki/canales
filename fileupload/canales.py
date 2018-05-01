@@ -13,7 +13,6 @@ dwt = re.compile('\d{2,2}/\d{2,2}/\d{4,4} \d{1,2}:\d{2,2}:\d{2,2} (AM|PM)')
 engine = create_engine('mysql+mysqldb://root:123asdqwe@127.0.0.1:3306/canalesdb')
 Session = sessionmaker()
 Session.configure(bind=engine)
-session = Session()
 
 
 def read_csv(csv_file):
@@ -22,7 +21,8 @@ def read_csv(csv_file):
 
 def str_or_date(val):
     if type(val) == str:
-        if (dwot.match(val) or dwt.match(val)):
+        #if (dwot.match(val) or dwt.match(val)):
+        if dwot.match(val):
             return 'DATETIME'
         else:
             return ('VARCHAR')
@@ -30,9 +30,8 @@ def str_or_date(val):
         return 'VARCHAR(1200) CHARACTER SET utf8 DEFAULT NULL'
 
 
-def values_to_sql(df, c_def):
-    for val in df[c_def[0]]:
-        print(val)
+def close_insert(sql_str):
+    return str(sql_str.replace('NULL,);', 'NULL);'))
 
 
 def process(csv_file, t_name):
@@ -74,12 +73,11 @@ def process(csv_file, t_name):
         create_table += ');\r\n'
         insert_to += ')'
 
-        # Dump SQL create table
-        sql_file = open('/tmp/' + t_name + '.sql', 'w')
-        sql_file.write(create_table)
-        sql_file.close()
         # Store in DB
-        #session.execute(create_table)
+        session = Session()
+        session.execute(create_table)
+        session.commit()
+        session.close()
 
         ## Build INSERT statements
         inserts = []
@@ -89,21 +87,35 @@ def process(csv_file, t_name):
                                     skipinitialspace=True)
             headers = next(csvfile)
             for row in linereader:
-                v_line = ','.join(row).replace(',,',',NULL,').replace("'",' ').replace('"',"'").replace("''", 'NULL').replace('\\','')
-                if t_name.find('nwcas') == 0 and len(v_line[:-1].split(',')) < t_cols:
+                v_line = ','.join(row).replace(',,',',NULL,').replace("'",' ').replace(';',' ').replace('None','NULL').replace('"',"'").replace("''", 'NULL').replace('\\','')
+                if (t_name.find('nwcas') == 0 and
+                    len(v_line[:-1].split(',')) < t_cols):
                     v_line += 'NULL'
 
                 inserts.append('INSERT INTO ' + str(t_name) +
                                ' VALUES (' + v_line + ');\r\n')
 
-        #print(inserts[0].replace(',,',',NULL,').replace('NULL,);', 'NULL);'))
-        #session.execute(inserts[0].replace(',,',',NULL,').replace('NULL,);', 'NULL);'))
-
-        sql_file = open('/tmp/' + t_name + '.sql', 'a')
-        for insert in inserts:
-            sql_file.write(insert.replace('NULL,);', 'NULL);'))
+        # Dump SQL create table
+        sql_file = open('/tmp/' + t_name + '.sql', mode='a')
+        sql_file.write(create_table)
+        for sql_str in inserts:
+            sql_file.write(close_insert(sql_str))
         sql_file.close()
-        print(inserts[0])
+
+        for insert in inserts:
+            session = Session()
+            sql_qry = close_insert(sql_str)
+            try:
+                session.execute(text(sql_qry))
+                session.commit()
+            except Exception:
+                session.rollback()
+                print(traceback.format_exc())
+                print(sql_qry)
+            finally:
+                session.close()
+
+        print("Finished!!!")
         return True
     except Exception:
         print(traceback.format_exc())
