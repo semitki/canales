@@ -65,7 +65,6 @@ class ProcessCsvView(View):
         csv = Picture.objects.get(pk=resource_id)
         ts = csv.timestamp.strftime("%Y%m%d%H%M%S")
         tableName = 'nw' + csv.file_type + ts
-        #df = can.read_csv(csv.file)
         response = can.process(settings.MEDIA_ROOT + '/' + csv.__str__(),
                                tableName)
         return JsonResponse(response, safe=False)

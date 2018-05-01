@@ -2,6 +2,7 @@
 import re
 import csv
 import traceback
+import datetime
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, text
@@ -116,7 +117,7 @@ def process(csv_file, t_name):
                 session.close()
 
         print("Finished!!!")
-        return True
+        return t_name
     except Exception:
         print(traceback.format_exc())
         return False
