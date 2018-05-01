@@ -11,7 +11,7 @@ from sqlalchemy.orm import sessionmaker
 
 dwot = re.compile('\d{2,2}/\d{2,2}/\d{4,4}')
 dwt = re.compile('\d{2,2}/\d{2,2}/\d{4,4} \d{1,2}:\d{2,2}:\d{2,2} (AM|PM)')
-engine = create_engine('mysql+mysqldb://root:123asdqwe@127.0.0.1:3306/canalesdb')
+engine = create_engine('mysql+mysqldb://canalesuser:123asdqwezxc@127.0.0.1:3306/canalesdb')
 Session = sessionmaker()
 Session.configure(bind=engine)
 
@@ -112,12 +112,21 @@ def process(csv_file, t_name):
             except Exception:
                 session.rollback()
                 print(traceback.format_exc())
-                print(sql_qry)
+                #print(sql_qry)
             finally:
                 session.close()
 
-        print("Finished!!!")
-        return t_name
+        f_type = ''
+        if t_name.find('nwcas') == 0:
+            f_type = 'cas'
+        else:
+            f_type = 'pat'
+
+        return {
+            'type':  f_type,
+            'TableName': t_name,
+            'Status': 'Complete'
+        }
     except Exception:
         print(traceback.format_exc())
-        return False
+        return { 'Status': 'Error'}

@@ -79,8 +79,8 @@ DATABASES = {
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'NAME': 'canalesdb',
-        'USER': 'root',
-        'PASSWORD': '123asdqwe',
+        'USER': 'canalesuser',
+        'PASSWORD': '123asdqwezxc',
     }
     #'default': {
     #    'ENGINE': 'django.db.backends.sqlite3',
