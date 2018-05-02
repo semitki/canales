@@ -1,4 +1,5 @@
 # coding: utf-8
+import os
 import re
 import csv
 import traceback
@@ -123,6 +124,7 @@ def process(csv_file, t_name):
 
         return {
             'type':  f_type,
+            'file': os.path.basename(csv_file),
             'TableName': t_name,
             'Status': 'Complete'
         }

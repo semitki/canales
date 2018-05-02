@@ -21,7 +21,7 @@ let dominator = {
     this.queueFiles = 0;      // Files in the process queue
     this.queueReady = false;
     this.processedFiles = 0;  // Number of succesfully processed files
-    this.data = {};
+    //this.data = {};
   },
 
 
@@ -91,18 +91,17 @@ let dominator = {
         // TODO $('button.process').attr('disabled', 'disabled');
         if(response.Status === 'Complete') {
           if(dominator.processedFiles < 2) {
-            //dominator.files.get(response.FileName.split('.')[0]).data = response
+            dominator.files.get(response.file.split('_')[0]).data = response
             dominator.processedFiles++;
           }
           if(dominator.processedFiles == 2) {
             $.blockUI({message: 'Generating report'});
             //Send only file type and name of the table created.
-            /*dominator.files.forEach((k, v) => {
+            let data = {};
+            dominator.files.forEach((k, v) => {
               data[k.type] = k.data.TableName;
-            });*/
-            dominator.data[response.type] = response.TableName
-            console.log(dominator.data)
-            dominator.processed(dominator.data);
+            });
+            dominator.processed(data);
           }
         }
     })
