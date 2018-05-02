@@ -64,7 +64,7 @@ def process(csv_file, t_name):
         insert_to = 'INSERT INTO '+t_name+' ('
         create_table = ("CREATE TABLE %s (\r\n" % t_name)
         for c in t_cols:
-            c_name = c[0].replace(' ', '_')
+            c_name = c[0].replace(' ', '_').replace('#', '')
             if cont < len(t_cols)-1:
                 create_table += '\t`'+c_name+'` '+c[1]+',\n\r'
                 insert_to += '`'+c_name+'`,'
