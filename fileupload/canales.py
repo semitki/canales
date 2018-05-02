@@ -400,6 +400,8 @@ def process(csv_file, t_name):
                 cur.execute(sql_qry)
             except Exception:
                 print(traceback.format_exc())
+        cur.close()
+        conn.close()
 
         f_type = ''
         if t_name.find('nwcas') == 0:
