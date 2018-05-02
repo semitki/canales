@@ -112,7 +112,6 @@ def process(csv_file, t_name):
             except Exception:
                 session.rollback()
                 print(traceback.format_exc())
-                #print(sql_qry)
             finally:
                 session.close()
 
