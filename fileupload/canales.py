@@ -10,23 +10,9 @@ import numpy as np
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
-
-dwot = re.compile('\d{2,2}/\d{2,2}/\d{4,4}')
-dwt = re.compile('\d{2,2}/\d{2,2}/\d{4,4} \d{1,2}:\d{2,2}:\d{2,2} (AM|PM)')
 engine = create_engine('mysql+mysqldb://canalesuser:123asdqwezxc@localhost/canalesdb')
 Session = sessionmaker()
 Session.configure(bind=engine)
-
-
-def str_or_date(val):
-    if type(val) == str:
-        #if (dwot.match(val) or dwt.match(val)):
-        if dwot.match(val):
-            return 'DATETIME'
-        else:
-            return ('VARCHAR')
-    else:
-        return 'VARCHAR(1200) CHARACTER SET utf8 DEFAULT NULL'
 
 
 def close_insert(sql_str):
@@ -400,7 +386,6 @@ def process(csv_file, t_name):
             sql_file.write(close_insert(sql_str))
         sql_file.close()
 
-#        conn = engine.connect()
         conn = mdb.connect(
             host='localhost',
             user='canalesuser',
@@ -410,24 +395,11 @@ def process(csv_file, t_name):
         conn.autocommit(True)
         cur = conn.cursor()
         for insert in inserts:
-            #session = Session()
             sql_qry = close_insert(insert)
-            #sql_qry = close_insert(sql_str)
             try:
-                #print(sql_qry)
                 cur.execute(sql_qry)
-                #conn.execute(text(sql_qry))
-                #session.execute(text(sql_qry))
-                #session.commit()
-                #session.close()
             except Exception:
-                #session.rollback()
-                #session.close()
                 print(traceback.format_exc())
-#            finally:
-#                conn.close()
-#                session.close()
-#        conn.close()
 
         f_type = ''
         if t_name.find('nwcas') == 0:
