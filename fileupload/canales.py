@@ -12,7 +12,7 @@ from sqlalchemy.orm import sessionmaker
 
 dwot = re.compile('\d{2,2}/\d{2,2}/\d{4,4}')
 dwt = re.compile('\d{2,2}/\d{2,2}/\d{4,4} \d{1,2}:\d{2,2}:\d{2,2} (AM|PM)')
-engine = create_engine('mysql+mysqldb://canalesuser:123asdqwezxc@127.0.0.1:3306/canalesdb')
+engine = create_engine('mysql+mysqldb://canalesuser:123asdqwezxc@localhost/canalesdb')
 Session = sessionmaker()
 Session.configure(bind=engine)
 

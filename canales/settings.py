@@ -24,7 +24,7 @@ SECRET_KEY = 'd&=x5845+tzjcdtk@y!y_=8ep)2^m&cb*l8vdes$12!+chpsu-'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['canales.gerri.club']
+ALLOWED_HOSTS = ['canales.gerri.club', 'localhost']
 
 
 # Application definition
