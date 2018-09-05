@@ -113,7 +113,7 @@ class PostProcessView(View):
             "CONCAT(\"OLD \",c.Insurance_Carrier_1))) as `HF Payer ID (P)`,\r\n "
             "/*Falta*/ \"\" as `Insurance Type (P)`, \r\n "
             "c.Group_Name_1 as `Group Name (P)`, c.Group_Number_1 as `Group Number (P)`, \r\n "
-            "c.Policy_Number_1 as `Insured\'s ID Number (P)`, c.Copayment_Amount as `Co-Pay (P)`, \r\n "
+            "c.Policy_Number_1 as `Insured''s I D Number (P)`, c.Copayment_Amount as `Co-Pay (P)`, \r\n "
             "c.Accept_Assignment_1 as `Insured's Accept Assignment (P)`, c.Insured_Relationship_1 as `Patient's Relationship (P)`, \r\n "
             "case c.Insured_Relationship_1 WHEN \"Self\" Then \"\" ELSE p1.First_Name END as `Insured's First Name (P)`, \r\n "
             "case c.Insured_Relationship_1 WHEN \"Self\" Then \"\" ELSE p1.Middle_Initial END as `Insured's Middle Initial (P)`, \r\n "
