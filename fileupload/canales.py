@@ -274,7 +274,7 @@ def table_cas(t_name):
         `NUCC_Box8` VARCHAR(12) CHARACTER SET utf8,
         `NUCC_Box9b` VARCHAR(12) CHARACTER SET utf8,
         `NUCC_Box9c` VARCHAR(12) CHARACTER SET utf8,
-        `NUCC_Box30` VARCHAR(12) CHARACTER SET utf8,
+        `NUCC_Box30` VARCHAR(12) CHARACTER SET utf8
     );
     """
 
