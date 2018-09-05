@@ -16,7 +16,7 @@ Session.configure(bind=engine)
 
 
 def close_insert(sql_str):
-    return str(sql_str.replace('NULL,);', 'NULL);'))
+    return str(sql_str.replace('NULL,);', 'NULL);').replace(',,',',NULL,'))
 
 
 def table_cas(t_name):
