@@ -111,7 +111,7 @@ def table_cas(t_name):
         `Death_Indicator` VARCHAR(20) CHARACTER SET utf8,
         `Illness_Indicator` VARCHAR(20) CHARACTER SET utf8,
         `Accident_State` VARCHAR(20) CHARACTER SET utf8,
-        `Date_Similar_Symptoms` VARCHAR(10) CHARACTER SET utf8,,
+        `Date_Similar_Symptoms` VARCHAR(10) CHARACTER SET utf8,
         `Medicaid_Resubmission_No` VARCHAR(20) CHARACTER SET utf8,
         `Medicaid_Original_Ref_No` VARCHAR(20) CHARACTER SET utf8,
         `Local_Use_A` VARCHAR(12) CHARACTER SET utf8,
