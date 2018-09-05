@@ -189,7 +189,7 @@ class PostProcessView(View):
             "g.Chart_Number as Guarantor_Account_Number, \r\n "
             "CASE g.Language WHEN \"English\" THEN \"EN\" WHEN \"Spanish\" THEN \"ES\" ELSE \"PD\" END AS Language, \r\n "
             "/* NPI for Referring? */\r\n "
-            "CASE c.Referring_Provider WHEN 'CAN00' THEN '1023086345' ELSE c.Referring_Provider END as Referring_Provider_NPI, \"\" as Location_External_ID\r\n    \r\n"
+            "CASE c.Referring_Provider WHEN \"CAN00\" THEN \"1023086345\" ELSE c.Referring_Provider END AS Referring_Provider_NPI, \"\" as Location_External_ID\r\n    \r\n"
             "FROM @TABLEPAT p\r\nINNER JOIN (@TABLEPATCAS pc \r\n                     "
             "INNER JOIN (@TABLECAS c\r\n                     "
             "LEFT JOIN @TABLEPAT p1 on p1.Chart_Number = c.Insured_1\r\n                     "
