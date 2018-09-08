@@ -97,8 +97,8 @@ class PostProcessView(View):
             "/* Req */p.Social_Security_Number as SSN, p.Street_1 as `*Address 1`, \r\n p.Street_2 as `Address 2`,\r\n "
             "/* Req */p.City as `*City`, p.State as `*State`, p.Zip_Code as `*ZIP`, \r\n "
             "IF(c.Marital_Status IS NULL, \"Single\", CASE c.Marital_Status WHEN \"Unknown\" THEN \"Single\" \r\n "
-            "WHEN \"\" THEN \"Single\" ELSE c.Marital_Status END) AS `Marital Status`, \r\n "
-            "CASE p.Employment_Status WHEN \"Full time\" THEN \"Employed\" \r\n "
+            "WHEN \"\" THEN \"Single\" WHEN \"Divorced\" THEN \"D(Divorced)\" WHEN \"Widowed\" THEN \"W(Widowed)\" \r\n "
+            "ELSE c.Marital_Status END) AS `Marital Status`, CASE p.Employment_Status WHEN \"Full time\" THEN \"Employed\" \r\n "
             "WHEN \"Not employed\" THEN \"Unemployed\" ELSE \"Other\" END AS `Employment Status`, \r\n "
             "p.Chart_Number as `Chart No.`, p.Signature_on_File as `Signature on File`, \r\n "
             "/* Req */coalesce(p.Phone_1, p.Contact_Phone_1, \"000-000-0000\") as `*Home Phone`, \r\n "
@@ -182,7 +182,7 @@ class PostProcessView(View):
             "g.Date_of_Birth as `Guarantor''s DOB`,\r\n "
             "CASE g.Sex WHEN \"Female\" then \"F\" WHEN \"Male\" then \"M\" ELSE \"U\" END AS `Guarantor''s Gender`,\r\n "
             "g.Street_1 as `Guarantor Address 1`, g.Street_2 as `Guarantor Address 2`, g.City as `Guarantor City`, g.State as `Guarantor State`,\r\n "
-            "g.Zip_Code as `Guarantor Zip`, coalesce(g.Phone_1, g.Contact_Phone_1) as `Guarantor Home Phone`, \r\n "
+            "g.Zip_Code as `Guarantor Zip`, /* Req */ coalesce(g.Phone_1, g.Contact_Phone_1, \"000-000-0000\") as `Guarantor Home Phone`, \r\n "
             "g.Work_Phone as `Guarantor Work Phone`, g.Social_Security_Number as `Guarantor SSN`, \r\n "
             "/* Guarantors Employer Data */\r\n "
             "g.Employer as `Guarantor Employer Name`, \"\" as `Guarantor Employer Address 1`, \"\" as `Guarantor Employer Address 2`, \r\n "
@@ -216,6 +216,7 @@ class PostProcessView(View):
 
         if TABLECAS!="" and TABLEPAT!="":
             TABLEPATCAS="nwpatcas"+str(TS)
+            print ("Tabla PatCas  ="+TABLEPATCAS)
 
             conn = mdb.connect(host=database['HOST'],
                                 user=database['USER'],
