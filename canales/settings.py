@@ -78,6 +78,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': 'localhost',
         'PORT': '3306',
+        'CONN_MAX_AGE': 0,
         'NAME': 'canalesdb',
         'USER': 'canalesuser',
         'PASSWORD': '123asdqwezxc',
